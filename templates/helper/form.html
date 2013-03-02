@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %} form {% endblock %}
+{% block header %}{% endblock %}
+{% block content %}
+
+<form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
+    Szukaj słowa<br/>
+        <input type="radio" name="where" value="SjpResult"/>korzystając z sjp<br/>
+        <input type="radio" name ="where" value="DbResult"/>w bazie<br/>
+        z literek:<input type="text" name="word_to_check"><br/> 
+        <input type="submit" name="find" value="Szukaj"/><br/><br/> 
+        Dodaj <br/>
+        <input type="radio" name="howmany" value="AddOne"/>słowo<input type="text" name="word_to_add"><br/>
+        <input type="radio" name="howmany" value="AddMultiple"/>słowa<input type="file" name="plik"/><br/>
+        <input type="submit" name="add" value="Dodaj"/><br/><br/> 
+    </form>
+{% endblock %}
+        
