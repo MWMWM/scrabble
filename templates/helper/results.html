@@ -5,16 +5,17 @@
 {% block header %}
     {% if words %} Możesz ułożyć takie słowa, jak:
     {% else %} Nie możesz ułożyć żadnego słowa ze wszystkich literek.
-    {% endif %}{% endblock %}
+    {% endif %}
+{% endblock %}
     
 {% block content %}
 	<ul>{% for word in words %}
-		<li>
-			{{word}}{% if forloop.last %}.
-        	{% else %},
-       		{% endif %}
-        </li>
-    {% endfor %}</ul>
-    <a href = "{% url form %}">kolejny zestaw literek </a>
+		<li><b>{{word}}</b>, które zostało dodane przez 
+        	{% for name in word.added_by.all %}
+            <b>	{{ name}}<b/>{% if forloop.last %}. {% else %}, {% endif %}
+        	{% endfor %}
+            <a href = "{% url 'helper.views.Delete' word %} ">usuń to słowo z bazy </a></li>
+	{% endfor %}</ul>
+    <a href = "{% url 'helper.views.ShowForm' %}">kolejny zestaw literek </a>
 {% endblock %}
 
