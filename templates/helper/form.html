@@ -2,32 +2,19 @@
 
 {% block title %} form {% endblock %}
 {% block content %}
-{% for word in info %}
-    <b>{{word}}</b>{% if forloop.last %}. {% else %}, {% endif %}<br/>
-{% endfor %}<br/>
-  
+<a href = '{% url 'logout' %}'> Wyloguj się </a>
+<a href = '{% url 'login' %}'> Zaloguj się </a> <br/><br/>
 <form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
-    {% if user %}
-     Jesteś zalogowany jako {{user}}
-   {% else %}
-    Nie jesteś zalogowany
-    {% endif %}<br/>
-    <input type="submit" name = "logout" value = "Wyloguj się"/><br/><br/>
-   Zaloguj się<br/>
-        login   <input type="text" name = "name"/><br/>
-        hasło   <input type="password" name = "password"/></br>
-        <input type="submit" name = "login" value = "Zaloguj"/>
-        <input type="submit" name = "addlogin" value = "Utwórz konto i zaloguj"/><br/><br/>
-    Szukaj słowa<br/>
-        <input type="radio" name = "where" value = "SjpResult"/>korzystając z sjp<br/>
-        <input type="radio" name = "where" value = "DbResult"/>w bazie<br/>
-        <input type="radio" name = "where" value = "MyResult"/>w mojej bazie<br/>
+           Szukaj słowa<br/>
+        <input type="radio" name = "where" value = "DbResult"/>w całej bazie<br/>
+        <input type="radio" name = "where" value = "MyResult"/>tylko wśród moich wyrazów<br/>
         z literek:<input type="text" name = "word_to_check"><br/> 
+        napisz "." w przypadku dowolnej litery <br/>
         <input type="submit" name="find" value="Szukaj"/><br/><br/> 
     Dodaj <br/>
         <input type="radio" name = "howmany" value = "AddOne"/>słowo<input type="text" name = "word_to_add"><br/>
         <input type="radio" name = "howmany" value = "AddMultiple"/>słowa<input type="file" name = "plik"/><br/>
-	    <input type="submit" name = "add" value = "Dodaj"/><br/><br/> 
-    </form>
+        <input type="submit" name = "add" value = "Dodaj"/><br/><br/>
+</form>
 {% endblock %}
         

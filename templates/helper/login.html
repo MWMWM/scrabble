@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+ <form action="" method="POST">{% csrf_token %}
+  Zaloguj się<br/>
+        login   <input type="text" name = "name"/><br/>
+        hasło   <input type="password" name = "password"/></br>
+        <input type="submit" name = "log" value = "Zaloguj"/>
+        <input type="submit" name = "addlog" value = "Utwórz konto i zaloguj"/><br/><br/>
+    </form>
+{% endblock %}
+ 

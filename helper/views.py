@@ -8,112 +8,127 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.core.urlresolvers import reverse
 
-def ShowForm(request):
-    info = []
-    if 'logout' in request.POST:           
-        logout(request)
-    if 'login' in request.POST or 'addlogin' in request.POST:
+def RenderWithInf(template, request, args={}):
+    words_number = Word.objects.distinct().count()
+    messages.info(request, 'w bazie jest obecnie ' + str(words_number) + ' słów')
+    user = request.user
+    if not user.username:
+        messages.info(request, 'nie jesteś zalogowany')
+    else:
+        messages.info(request, u'jesteś zalogowany jako: ' + user.username)
+    return render_to_response (template, args, context_instance=RequestContext(request))
+
+def Login(request):
+    if request.POST:
         name = request.POST.get('name', '')
         password = request.POST.get('password', '')
-        if 'addlogin' in request.POST and not User.objects.filter(username = name):
-                p = User.objects.create_user(username = name, password = password)
+        if 'addlog' in request.POST:
+            if not User.objects.filter(username = name):
+                User.objects.create_user(username = name, password = password)
         person = authenticate(username = name, password = password)
         if person is not None:
             login(request, person)
+            try:
+                where = request.get_full_path().split('?next=')[1]
+            except IndexError:
+                where = '/help/'
+            return HttpResponseRedirect(where)
         else:
-            info.append(u'błąd logowania')
+            messages.error(request, 'Błąd: podano nieprawidłowe dane')
+            if User.objects.filter(username = name):
+                messages.error(request, 'taki login istnieje, ale hasło nie odpowiada temu kontu')
+            else:
+                messages.error(request, 'taki login nie istnieje')
+    return RenderWithInf('helper/login.html', request)
+
+def Logout(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('main'))
+
+def Main(request):
     if 'find' in request.POST:
+        storage = messages.get_messages(request)
+        storage.used = True
         where = request.POST.get('where', '')
         word = request.POST.get('word_to_check', '')
         direction = '/help/' + where + '/' + word
         return HttpResponseRedirect(direction)
-    user = request.user
-    if user.username == 'AnonymousUser':
-        user.username=""
-    if 'add' in request.POST and user.username:
+    if 'add' in request.POST:
         where = request.POST.get('howmany', '')
         if where == 'AddMultiple':
-            if 'plik' in request.FILES:
-                AddMultiple(request.FILES['plik'], user)
-                info.append(u'Twój plik został dodany')
-            else:
-                info.append(u'Błąd: brak pliku')
+            return AddWords(request)
         elif where == 'AddOne':
             word = request.POST.get('word_to_add', '')
-            if AddOne(word, user):
-                    info.append(u'dodano wyraz <{}>'.format(word))
-            else:
-                info.append(u'słowo <{}> jest już w Twojej bazie'.format(word))
-    return render_to_response('helper/form.html', {'user': user.username, 'info': info}, RequestContext(request))
+            return HttpResponseRedirect('/help/AddWord/' + word)
+    return RenderWithInf('helper/form.html', request)
 
-def SjpResult(request, word):
-    """
-    szuka w oparciu o stronę sjp.pl,
-    bardzo wolne
-    """
-    existing_words = []
-    letters = [ letter for letter in word ]
-    for temp_letters in itertools.permutations(letters):
-        temp_word = ''.join((temp_letter for temp_letter in temp_letters))
-        if Check(temp_word):
-            existing_words.append(temp_word)
-    return render_to_response('helper/results.html', {'words': existing_words}, RequestContext(request))
+@login_required(login_url='/login/')
+def AddWord(request, word):
+    user = request.user
+    if AddOne(word, user):
+        messages.info(request, u'Dodano wyraz <{}>'.format(word))
+    else:
+        messages.info(request, u'Słowo <{}> jest już w Twojej bazie'.format(word))
+    return HttpResponseRedirect(reverse('main'))
+
+@login_required(login_url='/login/')
+def AddWords(request):
+    file = request.FILES['plik']
+    if file:
+        text = file.read()
+        how_many = 0
+        for word in re.split('[\s,?!;:()-]', text):
+            if re.search('[."\']', word) == None:
+                how_many += AddOne(word.decode('utf-8'), request.user)
+        messages.info(request, 'dodano ' + str(how_many) + ' słów')
+    else:
+        messages.error(request, 'nie wybrano pliku do dodania')
+    return HttpResponseRedirect(reverse('main'))
 
 def DbResult(request, word):
-    """
-    sprawdza, czy można utworzyć słowo, znajdujące się w bazie, 
-    wykorzystując wszystkie podane literki
-    """
-    code = Code(word)
-    existing_words = Word.objects.filter(code=code)
-    return render_to_response('helper/results.html', {'words': existing_words}, RequestContext(request))
+    letters = [letter for letter in u'wertyuioplkjhgfdsazcbnmęóąśłżźćń']
+    if '.' in word:
+        existing_words = []
+        for letter in letters:
+            existing_words.extend(Word.objects.filter(code = Code(word.replace('.', letter))))
+    else:
+        existing_words = Word.objects.filter(code = Code(word))
+    return RenderWithInf('helper/results.html', request, {'words': existing_words})
 
 def MyResult(request, word):
-    code = Code(word)
-    existing_words = Word.objects.filter(code=code, added_by=request.user)
-    return render_to_response('helper/results.html', {'words': existing_words}, RequestContext(request))
+    letters = [letter for letter in u'wertyuioplkjhgfdsazcbnmęóąśłżźćń']
+    if '.' in word:
+        existing_words = []
+        for letter in letters:
+            existing_words.extend(Word.objects.filter(
+                code = Code(word.replace('.', letter)), 
+                added_by = request.user))
+    else:
+        existing_words = Word.objects.filter(code = Code(word), added_by = request.user)
+    return RenderWithInf('helper/results.html', request, {'words': existing_words})
 
-def Delete(request, word):
-    person = request.user
-    word_to_delete = Word.objects.filter(word = word, added_by = person)
-    if word_to_delete:
-        to_delete = word_to_delete[0]
-        if to_delete.added_by.count() > 1:
-            to_delete.added_by.remove(person)
+@login_required(login_url='/login/')
+def Delete(request, word, prev):
+    if Word.objects.filter(word = word, added_by = request.user).exists():
+        word_to_delete = Word.objects.get(word = word)
+        if word_to_delete.added_by.count() > 1:
+            word_to_delete.added_by.remove(request.user)
         else:
-            to_delete.delete()
-    return HttpResponseRedirect('/help/DbResult/'+word)
-
-def AddMultiple(file, added_by):
-    """
-    dodaje wszystkie słowa z podanego pliku do bazy
-    pomija wszystkie słowa z cudzysłowem, kropką lub zawierające wielkie litery
-    (mniejsze prawdopodobieństwo dodania nazw własnych i skrótów)
-    """
-    text = file.read()
-    for word in re.split('[\s,?!;:()-]', text):
-        if re.search('[."\']', word) == None:
-            AddOne(word.decode('utf-8'), added_by)
+            word_to_delete.delete()
+    return HttpResponseRedirect('/help/DbResult/' + prev)
 
 def AddOne(word, added_by):
-    if word == word.lower():
-        if not Word.objects.filter(word = word):
-           code = Code(word) 
-           word_to_add = Word(word = word, code = code)
-           word_to_add.save()
-        if not Word.objects.filter(word=word, added_by = added_by):
-            word_to_add = Word.objects.get(word=word)
+    if word == word.lower() and len(word) < 9:
+        word, created = Word.objects.get_or_create(word = word, code = Code(word))
+        if not Word.objects.filter(word = word, added_by = added_by).exists():
+            word_to_add = Word.objects.get(word = word)
             word_to_add.added_by.add(added_by)
             return 1
+    return 0
 
 def Code(word):
     return ''.join(sorted(word[:]))
 
-def Check(word):
-    path = u'http://www.sjp.pl/{0}'.format(word).encode('utf-8')
-    for line in urllib.urlopen(path):
-        if 'słowo nie występuje w słowniku' in line or 'niedopuszczalne w grach' in line:
-            return 0
-        if 'dopuszczalne w grach' in line:
-            return 1
