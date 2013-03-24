@@ -3,9 +3,21 @@
 <html>
 <head>
 	<title>{% block title %}{% endblock %}</title>
-</head>
+    </head>
+
 <body>
-        <h1><p style="color: blue;">{% block header %}{% endblock %}</p></h1>
-        {% block content %} {% endblock %}
-</body>
+    <h1><p style="color: blue;">{% block header %}{% endblock %}</p></h1>
+    
+    <h4>{% block content %} {% endblock %}</h4>
+
+    <h3>{% block informations %}
+        
+        {% for message in messages %}
+            {{message}}{% if forloop.last %}. {% else %}, {% endif %}<br/>
+        {% endfor %}
+
+        {%endblock %}</h3>
+
+    </body>
+
 </html>
