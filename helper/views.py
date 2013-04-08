@@ -9,24 +9,24 @@ from django.shortcuts import render_to_response
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.urlresolvers import reverse
 
-def UserInf(view):
-    def CheckUser(request, *args, **kwargs):
-        user = request.user
-        if not user.username:
-            messages.info(request, 'nie jesteś zalogowany')
-        else:
-            messages.info(request, u'jesteś zalogowany jako: ' + user.username)
-        return view(request, *args, **kwargs)
-    return CheckUser
+def RenderWithInf(template, request, args={}):
+    words_number = Word.objects.distinct().count()
+    messages.info(request, 'w bazie jest obecnie ' + str(words_number) + ' słów')
+    user = request.user
+    if not user.username:
+        messages.info(request, 'nie jesteś zalogowany')
+    else:
+        messages.info(request, u'jesteś zalogowany jako: ' + user.username)
+    return render_to_response (template, args, context_instance=RequestContext(request))
 
-@UserInf
 def Login(request):
     if request.POST:
         name = request.POST.get('name', '')
         password = request.POST.get('password', '')
         if 'addlog' in request.POST:
-            if not User.objects.filter(username = name):    
+            if not User.objects.filter(username = name):
                 User.objects.create_user(username = name, password = password)
         person = authenticate(username = name, password = password)
         if person is not None:
@@ -42,13 +42,12 @@ def Login(request):
                 messages.error(request, 'taki login istnieje, ale hasło nie odpowiada temu kontu')
             else:
                 messages.error(request, 'taki login nie istnieje')
-    return render_to_response('helper/login.html', RequestContext(request))
+    return RenderWithInf('helper/login.html', request)
 
 def Logout(request):
     logout(request)
-    return HttpResponseRedirect('/help/')
+    return HttpResponseRedirect(reverse('main'))
 
-@UserInf
 def Main(request):
     if 'find' in request.POST:
         where = request.POST.get('where', '')
@@ -62,10 +61,7 @@ def Main(request):
         elif where == 'AddOne':
             word = request.POST.get('word_to_add', '')
             return HttpResponseRedirect('/help/AddWord/' + word)
-    words_number = Word.objects.distinct().count()
-    messages.info(request, 'w bazie jest obecnie ' + str(words_number) + ' słów')
-    #messages.add_message(request, messages.INFO, 'words_number')
-    return render_to_response('helper/form.html', RequestContext(request))
+    return RenderWithInf('helper/form.html', request)
 
 @login_required(login_url='/login/')
 def AddWord(request, word):
@@ -74,7 +70,7 @@ def AddWord(request, word):
         messages.info(request, u'Dodano wyraz <{}>'.format(word))
     else:
         messages.info(request, u'Słowo <{}> jest już w Twojej bazie'.format(word))
-    return HttpResponseRedirect('/help/')
+    return HttpResponseRedirect(reverse('main'))
 
 @login_required(login_url='/login/')
 def AddWords(request):
@@ -88,7 +84,7 @@ def AddWords(request):
         messages.info(request, 'dodano ' + str(how_many) + ' słów')
     else:
         messages.error(request, 'nie wybrano pliku do dodania')
-    return HttpResponseRedirect('/help/')
+    return HttpResponseRedirect(reverse('main'))
 
 def DbResult(request, word):
     letters = [letter for letter in u'wertyuioplkjhgfdsazcbnmęóąśłżźćń']
@@ -98,9 +94,7 @@ def DbResult(request, word):
             existing_words.extend(Word.objects.filter(code = Code(word.replace('.', letter))))
     else:
         existing_words = Word.objects.filter(code = Code(word))
-    return render_to_response('helper/results.html', {
-        'words': existing_words}, 
-        RequestContext(request))
+    return RenderWithInf('helper/results.html', request, {'words': existing_words})
 
 def MyResult(request, word):
     letters = [letter for letter in u'wertyuioplkjhgfdsazcbnmęóąśłżźćń']
@@ -112,9 +106,7 @@ def MyResult(request, word):
                 added_by = request.user))
     else:
         existing_words = Word.objects.filter(code = Code(word), added_by = request.user)
-    return render_to_response('helper/results.html', {
-        'words': existing_words}, 
-        RequestContext(request))
+    return RenderWithInf('helper/results.html', request, {'words': existing_words})
 
 @login_required(login_url='/login/')
 def Delete(request, word, prev):
@@ -128,7 +120,7 @@ def Delete(request, word, prev):
 
 def AddOne(word, added_by):
     if word == word.lower() and len(word) < 9:
-	word, created = Word.objects.get_or_create(word = word, code = Code(word))
+        word, created = Word.objects.get_or_create(word = word, code = Code(word))
         if not Word.objects.filter(word = word, added_by = added_by).exists():
             word_to_add = Word.objects.get(word = word)
             word_to_add.added_by.add(added_by)
