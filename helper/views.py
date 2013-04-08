@@ -19,7 +19,8 @@ def RenderWithInf(template, request, args={}):
         messages.info(request, 'nie jesteś zalogowany')
     else:
         messages.info(request, u'jesteś zalogowany jako: ' + user.username)
-    return render_to_response (template, args, context_instance=RequestContext(request))
+    return render_to_response (template, args, 
+            context_instance=RequestContext(request))
 
 def Login(request):
     if request.POST:
@@ -39,7 +40,8 @@ def Login(request):
         else:
             messages.error(request, 'Błąd: podano nieprawidłowe dane')
             if User.objects.filter(username = name):
-                messages.error(request, 'taki login istnieje, ale hasło nie odpowiada temu kontu')
+                messages.error(request, 'taki login istnieje, 
+                        ale hasło nie odpowiada temu kontu')
             else:
                 messages.error(request, 'taki login nie istnieje')
     return RenderWithInf('helper/login.html', request)
@@ -91,7 +93,8 @@ def DbResult(request, word):
     if '.' in word:
         existing_words = []
         for letter in letters:
-            existing_words.extend(Word.objects.filter(code = Code(word.replace('.', letter))))
+            existing_words.extend(Word.objects.filter(
+                code = Code(word.replace('.', letter))))
     else:
         existing_words = Word.objects.filter(code = Code(word))
     return RenderWithInf('helper/results.html', request, {'words': existing_words})
@@ -105,7 +108,8 @@ def MyResult(request, word):
                 code = Code(word.replace('.', letter)), 
                 added_by = request.user))
     else:
-        existing_words = Word.objects.filter(code = Code(word), added_by = request.user)
+        existing_words = Word.objects.filter(code = Code(word), 
+                added_by = request.user)
     return RenderWithInf('helper/results.html', request, {'words': existing_words})
 
 @login_required(login_url='/login/')
