@@ -40,7 +40,7 @@ def Login(request):
         else:
             messages.error(request, 'Błąd: podano nieprawidłowe dane')
             if User.objects.filter(username = name):
-                messages.error(request, 'taki login istnieje, 
+                messages.error(request, 'taki login istnieje, \
                         ale hasło nie odpowiada temu kontu')
             else:
                 messages.error(request, 'taki login nie istnieje')
@@ -59,20 +59,19 @@ def Main(request):
     if 'add' in request.POST:
         where = request.POST.get('howmany', '')
         if where == 'AddMultiple':
-            return AddWords(request)
+            AddWords(request)
         elif where == 'AddOne':
-            word = request.POST.get('word_to_add', '')
-            return HttpResponseRedirect('/help/AddWord/' + word)
+            AddWord(request)
     return RenderWithInf('helper/form.html', request)
 
 @login_required(login_url='/login/')
-def AddWord(request, word):
+def AddWord(request):
+    word = request.POST.get('word_to_add', '')
     user = request.user
     if AddOne(word, user):
         messages.info(request, u'Dodano wyraz <{}>'.format(word))
     else:
         messages.info(request, u'Słowo <{}> jest już w Twojej bazie'.format(word))
-    return HttpResponseRedirect(reverse('main'))
 
 @login_required(login_url='/login/')
 def AddWords(request):
@@ -86,7 +85,6 @@ def AddWords(request):
         messages.info(request, 'dodano ' + str(how_many) + ' słów')
     else:
         messages.error(request, 'nie wybrano pliku do dodania')
-    return HttpResponseRedirect(reverse('main'))
 
 def DbResult(request, word):
     letters = [letter for letter in u'wertyuioplkjhgfdsazcbnmęóąśłżźćń']
@@ -97,7 +95,8 @@ def DbResult(request, word):
                 code = Code(word.replace('.', letter))))
     else:
         existing_words = Word.objects.filter(code = Code(word))
-    return RenderWithInf('helper/results.html', request, {'words': existing_words})
+    return RenderWithInf('helper/results.html', request, {
+        'words': existing_words, 'whose': 'all'})
 
 def MyResult(request, word):
     letters = [letter for letter in u'wertyuioplkjhgfdsazcbnmęóąśłżźćń']
@@ -110,17 +109,18 @@ def MyResult(request, word):
     else:
         existing_words = Word.objects.filter(code = Code(word), 
                 added_by = request.user)
-    return RenderWithInf('helper/results.html', request, {'words': existing_words})
+    return RenderWithInf('helper/results.html', request, {
+        'words': existing_words, 'whose':'mine'})
 
 @login_required(login_url='/login/')
-def Delete(request, word, prev):
+def Delete(request, xxresult, words, word):
     if Word.objects.filter(word = word, added_by = request.user).exists():
         word_to_delete = Word.objects.get(word = word)
         if word_to_delete.added_by.count() > 1:
             word_to_delete.added_by.remove(request.user)
         else:
             word_to_delete.delete()
-    return HttpResponseRedirect('/help/DbResult/' + prev)
+    return HttpResponseRedirect('/help/'+ xxresult + '/' + words)
 
 def AddOne(word, added_by):
     if word == word.lower() and len(word) < 9:

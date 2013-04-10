@@ -14,7 +14,7 @@
         	{% for name in word.added_by.all %}
             <b>	{{ name }}</b>{% if forloop.last %}. {% else %}, {% endif %}
         	{% endfor %}
-            <a href = "{{ request.path }}/Delete/{{ word }}">usuń to słowo z bazy </a></li>
+            <a href = "{{ request.path }}/{{ word }}">usuń to słowo z bazy </a></li>
 	{% endfor %}</ul>
     <a href = "{% url 'main' %}">kolejny zestaw literek </a>
 {% endblock %}
