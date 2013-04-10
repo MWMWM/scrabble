@@ -2,53 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import itertools, urllib, re
-from helper.models import Word, User
-from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-
-def RenderWithInf(template, request, args={}):
-    words_number = Word.objects.distinct().count()
-    messages.info(request, 'w bazie jest obecnie ' + str(words_number) + ' słów')
-    user = request.user
-    if not user.username:
-        messages.info(request, 'nie jesteś zalogowany')
-    else:
-        messages.info(request, u'jesteś zalogowany jako: ' + user.username)
-    return render_to_response (template, args, 
-            context_instance=RequestContext(request))
-
-def Login(request):
-    if request.POST:
-        name = request.POST.get('name', '')
-        password = request.POST.get('password', '')
-        if 'addlog' in request.POST:
-            if not User.objects.filter(username = name):
-                User.objects.create_user(username = name, password = password)
-        person = authenticate(username = name, password = password)
-        if person is not None:
-            login(request, person)
-            try:
-                where = request.get_full_path().split('?next=')[1]
-            except IndexError:
-                where = '/help/'
-            return HttpResponseRedirect(where)
-        else:
-            messages.error(request, 'Błąd: podano nieprawidłowe dane')
-            if User.objects.filter(username = name):
-                messages.error(request, 'taki login istnieje, \
-                        ale hasło nie odpowiada temu kontu')
-            else:
-                messages.error(request, 'taki login nie istnieje')
-    return RenderWithInf('helper/login.html', request)
-
-def Logout(request):
-    logout(request)
-    return HttpResponseRedirect(reverse('main'))
+from helper.models import Word, User
+from scrabble.views import RenderWithInf
 
 def Main(request):
     if 'find' in request.POST:
@@ -57,14 +18,16 @@ def Main(request):
         direction = '/help/' + where + '/' + word
         return HttpResponseRedirect(direction)
     if 'add' in request.POST:
-        where = request.POST.get('howmany', '')
-        if where == 'AddMultiple':
-            AddWords(request)
-        elif where == 'AddOne':
-            AddWord(request)
-    return RenderWithInf('helper/form.html', request)
+        if not request.user.username:
+            messages.error(request, 'by dodać jakiekolwiek słowo musisz być zalogowany')
+        else:
+            where = request.POST.get('howmany', '')
+            if where == 'AddMultiple':
+                AddWords(request)
+            elif where == 'AddOne':
+                AddWord(request)
+    return RenderWithInf('helper/main.html', request)
 
-@login_required(login_url='/login/')
 def AddWord(request):
     word = request.POST.get('word_to_add', '')
     user = request.user
@@ -73,7 +36,6 @@ def AddWord(request):
     else:
         messages.info(request, u'Słowo <{}> jest już w Twojej bazie'.format(word))
 
-@login_required(login_url='/login/')
 def AddWords(request):
     file = request.FILES['plik']
     if file:
@@ -86,31 +48,26 @@ def AddWords(request):
     else:
         messages.error(request, 'nie wybrano pliku do dodania')
 
-def DbResult(request, word):
-    letters = [letter for letter in u'wertyuioplkjhgfdsazcbnmęóąśłżźćń']
-    if '.' in word:
+def XxResult(request, xx, word):
+    letters = u'wertyuioplkjhgfdsazcbnmęóąśłżźćń'
+    if '*' in word:
         existing_words = []
         for letter in letters:
-            existing_words.extend(Word.objects.filter(
-                code = Code(word.replace('.', letter))))
+            if xx == 'my':
+                existing_words.extend(Word.objects.filter(
+                    code = Code(word.replace('*', letter)), 
+                    added_by = request.user))
+            else:
+                existing_words.extend(Word.objects.filter(
+                    code = Code(word.replace('*', letter))))
     else:
-        existing_words = Word.objects.filter(code = Code(word))
+        if xx == 'my':
+            existing_words = Word.objects.filter(code = Code(word), 
+                added_by = request.user)
+        else:
+            existing_words = Word.objects.filter(code = Code(word))
     return RenderWithInf('helper/results.html', request, {
         'words': existing_words, 'whose': 'all'})
-
-def MyResult(request, word):
-    letters = [letter for letter in u'wertyuioplkjhgfdsazcbnmęóąśłżźćń']
-    if '.' in word:
-        existing_words = []
-        for letter in letters:
-            existing_words.extend(Word.objects.filter(
-                code = Code(word.replace('.', letter)), 
-                added_by = request.user))
-    else:
-        existing_words = Word.objects.filter(code = Code(word), 
-                added_by = request.user)
-    return RenderWithInf('helper/results.html', request, {
-        'words': existing_words, 'whose':'mine'})
 
 @login_required(login_url='/login/')
 def Delete(request, xxresult, words, word):
@@ -123,7 +80,7 @@ def Delete(request, xxresult, words, word):
     return HttpResponseRedirect('/help/'+ xxresult + '/' + words)
 
 def AddOne(word, added_by):
-    if word == word.lower() and len(word) < 9:
+    if word == word.lower() and 1 < len(word) < 9:
         word, created = Word.objects.get_or_create(word = word, code = Code(word))
         if not Word.objects.filter(word = word, added_by = added_by).exists():
             word_to_add = Word.objects.get(word = word)
