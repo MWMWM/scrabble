@@ -10,12 +10,12 @@
     
 {% block content %}
 <ul>{% for word in words %}
-		<li><b>{{ word }}</b>, które zostało dodane przez 
-        	{% for name in word.added_by.all %}
-            <b>	{{ name }}</b>{% if forloop.last %}. {% else %}, {% endif %}
-        	{% endfor %}
+    <li><b>{{ word }}</b>, które zostało dodane przez 
+        {% for name in word.added_by.all %}
+            <b> {{ name }}</b>{% if forloop.last %}. {% else %}, {% endif %}
+        {% endfor %}
             <a href = "{{ request.path }}/{{ word }}">usuń to słowo z bazy </a></li>
-	{% endfor %}</ul>
+    {% endfor %}</ul>
     <a href = "{% url 'h_main' %}">kolejny zestaw literek </a>
 {% endblock %}
 

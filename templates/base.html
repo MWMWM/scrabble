@@ -6,6 +6,10 @@
     </head>
 
 <body>
+    {% block loginout %}
+    <a href = '/Logout{{ request.path }}'> Wyloguj się </a>
+    <a href = '/Login{{ request.path }}'> Zaloguj się </a> <br/><br/>
+    {% endblock %}
     <h1><p style="color: blue;">{% block header %}{% endblock %}</p></h1>
     
     <h4>{% block content %} {% endblock %}</h4>
