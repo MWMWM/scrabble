@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import itertools, urllib, re
+import itertools, urllib, re, string
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.contrib.auth import authenticate, login, logout
@@ -30,8 +30,7 @@ def Main(request):
 
 def AddWord(request):
     word = request.POST.get('word_to_add', '')
-    user = request.user
-    if AddOne(word, user):
+    if AddOne(word, request.user):
         messages.info(request, u'Dodano wyraz <{}>'.format(word))
     else:
         messages.info(request, u'Słowo <{}> jest już w Twojej bazie'.format(word))
@@ -44,12 +43,15 @@ def AddWords(request):
         for word in re.split('[\s,?!;:()-]', text):
             if re.search('[."\']', word) == None:
                 how_many += AddOne(word.decode('utf-8'), request.user)
-        messages.info(request, 'dodano ' + str(how_many) + ' słów')
+        if 0 < how_many < 5:
+            messages.ifo(request, 'dodano' + str(how_many) + ' słowa')
+        else:
+            messages.info(request, 'dodano ' + str(how_many) + ' słów')
     else:
         messages.error(request, 'nie wybrano pliku do dodania')
 
 def XxResult(request, xx, word):
-    letters = u'wertyuioplkjhgfdsazcbnmęóąśłżźćń'
+    letters = string.ascii_lowercase + u'ęóąśłżźćń'
     if '*' in word:
         existing_words = []
         for letter in letters:
@@ -69,22 +71,23 @@ def XxResult(request, xx, word):
     return RenderWithInf('helper/results.html', request, {
         'words': existing_words, 'whose': 'all'})
 
-@login_required(login_url='/login/')
-def Delete(request, xxresult, words, word):
-    if Word.objects.filter(word = word, added_by = request.user).exists():
-        word_to_delete = Word.objects.get(word = word)
+def Delete(request, where, word):
+    print where
+    if request.user.username:
+        word_to_delete = Word.objects.get(word = word, added_by = request.user)
         if word_to_delete.added_by.count() > 1:
             word_to_delete.added_by.remove(request.user)
         else:
             word_to_delete.delete()
-    return HttpResponseRedirect('/help/'+ xxresult + '/' + words)
+    else:
+        messages.errors(request, 'nie możesz usunąć słowa, które nie należy do Ciebie')
+    return HttpResponseRedirect('/help/' + where)
 
 def AddOne(word, added_by):
     if word == word.lower() and 1 < len(word) < 9:
         word, created = Word.objects.get_or_create(word = word, code = Code(word))
-        if not Word.objects.filter(word = word, added_by = added_by).exists():
-            word_to_add = Word.objects.get(word = word)
-            word_to_add.added_by.add(added_by)
+        if not Word.objects.filter(word = word, added_by = added_by).exists(): 
+            word.added_by.add(added_by)
             return 1
     return 0
 

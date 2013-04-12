@@ -2,14 +2,18 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-2">
 <html>
 <head>
-	<title>{% block title %}{% endblock %}</title>
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="/media/style.css">
+    <script src="/media/jquery-1.2.6.min.js"></script>
     </head>
 
 <body>
+    <div class="container">
+        <div class="menu">
     {% block loginout %}
     <a href = '/Logout{{ request.path }}'> Wyloguj się </a>
     <a href = '/Login{{ request.path }}'> Zaloguj się </a> <br/><br/>
-    {% endblock %}
+    {% endblock %}</div>
     <h1><p style="color: blue;">{% block header %}{% endblock %}</p></h1>
     
     <h4>{% block content %} {% endblock %}</h4>
@@ -21,7 +25,7 @@
         {% endfor %}
 
         {%endblock %}</h3>
-
+    </div>
     </body>
 
 </html>

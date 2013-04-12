@@ -3,19 +3,20 @@
 {% block title %} main page for help {% endblock %}
 {% block content %}
 <form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
-    Szukaj słowa<br/>
-    <input type="radio" name = "where" value = "DbResult"/>w całej bazie<br/>
-    <input type="radio" name = "where" value = "MyResult"/>wśród moich wyrazów<br/>
-    z literek:<input type="text" name = "word_to_check"><br/> 
-    napisz "*" w przypadku dowolnej litery <br/>
-    <input type="submit" name="find" value="Szukaj"/><br/><br/> 
     Dodaj <br/>
     <input type="radio" name = "howmany" value = "AddOne"/>słowo
     <input type="text" name = "word_to_add"><br/>
     <input type="radio" name = "howmany" value = "AddMultiple"/>słowa
     <input type="file" name = "plik"/><br/>
     <input type="submit" name = "add" value = "Dodaj"/><br/><br/>
-    </form>
+
+    Szukaj słowa<br/>
+    <input type="radio" name = "where" value = "DbResult"/>w całej bazie<br/>
+    <input type="radio" name = "where" value = "MyResult"/>wśród moich wyrazów<br/>
+    z literek:<input type="text" name = "word_to_check"><br/> 
+    napisz "*" w przypadku dowolnej litery <br/>
+    <input type="submit" name="find" value="Szukaj"/><br/><br/> 
+      </form>
 <a href = '{% url 'p_main' %}'> Powrót do gry </a>
 {% endblock %}
         

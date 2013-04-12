@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %} main page for play {% endblock %}
+{% block content %}
+
+<script src="/media/board.js"></script>
+Twój aktualny wynik:
+{{result}}<br/>
+<label for="board"> Plansza:</label> {{board}}<br/>
+Literki: {{letters}}<br/>
+<form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
+    Twój wyraz: <input type="text" name = "word"> 
+    <input type="submit" name = "check" value = "submit"/><br/>
+    <a href='{% url 'newletters' %}'> Wymień literki </a><br/>
+<a href='{% url 'h_main' %}'> Edytuj bazę słów </a>
+</form>
+
+{% endblock %}
+        
