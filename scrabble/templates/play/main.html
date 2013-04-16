@@ -11,8 +11,8 @@ Literki: {{letters}}<br/>
 <form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
     Twój wyraz: <input type="text" name = "word"> 
     <input type="submit" name = "check" value = "submit"/><br/>
-    <a href='{% url 'newletters' %}'> Wymień literki </a><br/>
-<a href='{% url 'h_main' %}'> Edytuj bazę słów </a>
+    <a href='{% url 'play:newletters' %}'> Wymień literki </a><br/>
+<a href='{% url 'help:main' %}'> Edytuj bazę słów </a>
 </form>
 
 {% endblock %}

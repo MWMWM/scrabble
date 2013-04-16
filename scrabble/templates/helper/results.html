@@ -16,6 +16,6 @@
         {% endfor %}
             <a href = "{{ request.path }}/{{ word }}">usuń to słowo z bazy </a></li>
     {% endfor %}</ul>
-    <a href = "{% url 'h_main' %}">kolejny zestaw literek </a>
+    <a href = "{% url 'help:main' %}">kolejny zestaw literek </a>
 {% endblock %}
 
