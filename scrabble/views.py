@@ -10,7 +10,9 @@ from django.contrib import messages
 
 def RenderWithInf(template, request, args={}):
     words_number = Word.objects.distinct().count()
-    if 0 <words_number < 5:
+    if words_number ==1:
+        messages.info(request, 'w bazie jest obecnie ' + str(words_number) + ' słowo')
+    if 0 < words_number < 5:
         messages.info(request, 'w bazie są obecnie ' + str(words_number) + ' słowa')
     else:
         messages.info(request, 'w bazie jest obecnie ' + str(words_number) + ' słów')

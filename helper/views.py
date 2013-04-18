@@ -43,7 +43,9 @@ def AddWords(request):
         for word in re.split('[\s,?!;:()-]', text):
             if re.search('[."\']', word) == None:
                 how_many += AddOne(word.decode('utf-8'), request.user)
-        if 0 < how_many < 5:
+        if how_many == 1:
+            messages.ifo(request, 'dodano słowo')
+        if 1 < how_many < 5:
             messages.ifo(request, 'dodano' + str(how_many) + ' słowa')
         else:
             messages.info(request, 'dodano ' + str(how_many) + ' słów')
