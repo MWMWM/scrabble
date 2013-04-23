@@ -8,4 +8,4 @@ class UserProfile(models.Model):
     lang_choices = (('pl', 'polski'), ('en', 'english'),)
     lang = models.CharField(max_length=2, choices=lang_choices, default='pl')
     def __unicode__(self):
-        return self.user.username
+        return self.user.username 

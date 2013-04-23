@@ -10,43 +10,57 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from helper.models import Word, User
 from scrabble.views import RenderWithInf
+from helper.views import Code
+from helper.models import Word
 
 def Main(request):
     result = 0
-    letters = "".join(NewLetter() for i in range(6))
+    letters = "".join(NewLetter() for i in range(8))
     return HttpResponseRedirect(reverse('play:playing', 
-        kwargs={'letters': letters, 'result': result}))
+        kwargs={'result': result, 'letters': letters}))
 
 def Playing(request, letters, result):
-    board = NewBoard()
-    print request.POST
     if 'check' in request.POST:
         result = int(result)
         word = request.POST.get('word','')
-        print word
-        if word in letters: # poprawić
-            result += AddPoints(word)
+        if Word.objects.filter(word=word).exists():
             for letter in word:
-                string.replace(letters, letter, NewLetter())
+                if letter in letters:
+                    letters.replace(letter, "", 1)
+                else:
+                    messages.error(request, 'nie możesz utworzyć tego słowa - \
+                            nie masz odpowiednich literek')
+                    return RenderWithInf('play/main.html', request, {
+                        'letters': letters, 'result':result})
+            for letter in word:
+                letters = letters.join(NewLetter())
+            result += AddPoints(word)
         else:
-            messages.error(request, 'nie możesz utworzyć tego słowa')
-        print letters
-        print result
-        return HttpResponseRedirect(reverse('play:playing', 
-             kwargs={'letters': letters, 'result': result}))
+            messages.error(request, 'nie możesz utworzyć tego słowa - \
+                    nie ma go w słowniku')
+        return HttpResponseRedirect(reverse('play:playing', kwargs={
+            'letters': letters, 'result': result}))
     return RenderWithInf('play/main.html', request, {
-        'letters': letters, 'board': board, 'result':result})
+        'letters': letters, 'result':result})
 
-def NewLetters(request):
-    letters = "".join(NewLetter() for i in range(6))
-    return  HttpResponseRedirect(reverse('play:main'))
+def NewLetters(request, result):
+    letters = "".join(NewLetter() for i in range(8))
+    if Word.objects.filter(code = Code(letters)).exists():
+        if result > 10:
+            result = int(result) - 10
+            messages.info(request, 'można było ułożyć słowo')
+        else:
+            messages.info(request, 'koniec gry - uzyskano ujemną liczbę punktów')
+            return HttpResponseRedirect(reverse('play:main'))
+    return  HttpResponseRedirect(reverse('play:playing', 
+        kwargs={'result': result, 'letters': letters}))
 
 def NewLetter():
-    letters = random.choice(string.ascii_lowercase) # + u'ęóąśłżźćń')
-    return letters
+    #letters = string.ascii_lowercase
+    letters = u'abcdefghijklmnopqrstuvwxyzęóąśłżźćń'
+    letter = random.choice(letters)
+    return letter
 
 def AddPoints(word):
     return len(word)
 
-def NewBoard():
-    return ''

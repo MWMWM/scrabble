@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import itertools, urllib, re, string
+import itertools, urllib, re
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.contrib.auth import authenticate, login, logout
@@ -19,7 +19,8 @@ def Main(request):
         return HttpResponseRedirect(direction)
     if 'add' in request.POST:
         if not request.user.username:
-            messages.error(request, 'by dodać jakiekolwiek słowo musisz być zalogowany')
+            messages.error(request, 'by dodać jakiekolwiek słowo \
+                    musisz być zalogowany')
         else:
             where = request.POST.get('howmany', '')
             if where == 'AddMultiple':
@@ -53,7 +54,7 @@ def AddWords(request):
         messages.error(request, 'nie wybrano pliku do dodania')
 
 def XxResult(request, xx, word):
-    letters = string.ascii_lowercase + u'ęóąśłżźćń'
+    letters = u'abcdefghijklmnopqrstuvwxyzęóąśłżźćń'
     if '*' in word:
         existing_words = []
         for letter in letters:
@@ -74,7 +75,6 @@ def XxResult(request, xx, word):
         'words': existing_words, 'whose': 'all'})
 
 def Delete(request, where, word):
-    print where
     if request.user.username:
         word_to_delete = Word.objects.get(word = word, added_by = request.user)
         if word_to_delete.added_by.count() > 1:
@@ -82,7 +82,8 @@ def Delete(request, where, word):
         else:
             word_to_delete.delete()
     else:
-        messages.errors(request, 'nie możesz usunąć słowa, które nie należy do Ciebie')
+        messages.errors(request, 'nie możesz usunąć słowa, \
+                które nie należy do Ciebie')
     return HttpResponseRedirect('/help/' + where)
 
 def AddOne(word, added_by):

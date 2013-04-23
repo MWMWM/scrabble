@@ -7,3 +7,5 @@ class Word(models.Model):
     added_by = models.ManyToManyField(User)
     def __unicode__(self):
         return self.word
+    def str(self):
+        return self.word
