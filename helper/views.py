@@ -15,8 +15,8 @@ def Main(request):
     if 'find' in request.POST:
         where = request.POST.get('where', '')
         word = request.POST.get('word_to_check', '')
-        direction = '/help/' + where + '/' + word
-        return HttpResponseRedirect(direction)
+        return HttpResponseRedirect(reverse('help:xxresult', kwargs={
+            'where':where, 'word':word}))
     if 'add' in request.POST:
         if not request.user.username:
             messages.error(request, 'by dodać jakiekolwiek słowo \
@@ -26,15 +26,21 @@ def Main(request):
             if where == 'AddMultiple':
                 AddWords(request)
             elif where == 'AddOne':
-                AddWord(request)
+                word = request.POST.get('word_to_add', '')
+                where = reverse('help:main')
+                return HttpResponseRedirect(reverse('help:add_word', kwargs={
+                    'word':word, 'where_next':where}))
     return RenderWithInf('helper/main.html', request)
 
-def AddWord(request):
-    word = request.POST.get('word_to_add', '')
-    if AddOne(word, request.user):
-        messages.info(request, u'Dodano wyraz <{}>'.format(word))
+def AddWord(request, word, where_next):
+    if request.user.username:
+        if AddOne(word, request.user):
+            messages.info(request, u'Dodano wyraz <{}>'.format(word))
+        else:
+            messages.info(request, u'Słowo <{}> jest już w Twojej bazie'.format(word))
     else:
-        messages.info(request, u'Słowo <{}> jest już w Twojej bazie'.format(word))
+        messages.error(request, 'by dodać jakiekolwiek słowo musisz być zalogowany')
+    return HttpResponseRedirect(where_next)
 
 def AddWords(request):
     file = request.FILES['plik']
@@ -53,12 +59,12 @@ def AddWords(request):
     else:
         messages.error(request, 'nie wybrano pliku do dodania')
 
-def XxResult(request, xx, word):
-    letters = u'abcdefghijklmnopqrstuvwxyzęóąśłżźćń'
+def XxResult(request, where, word):
+    letters = u'abcdefghijklmnoprstuwyzęóąśłżźćń'
     if '*' in word:
         existing_words = []
         for letter in letters:
-            if xx == 'my':
+            if where == 'MyResult':
                 existing_words.extend(Word.objects.filter(
                     code = Code(word.replace('*', letter)), 
                     added_by = request.user))
@@ -66,7 +72,7 @@ def XxResult(request, xx, word):
                 existing_words.extend(Word.objects.filter(
                     code = Code(word.replace('*', letter))))
     else:
-        if xx == 'my':
+        if where == 'MyResult':
             existing_words = Word.objects.filter(code = Code(word), 
                 added_by = request.user)
         else:

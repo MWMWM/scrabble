@@ -110,10 +110,11 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(ROOT_PATH, 'templates'),
     )
+
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.contrib.auth.context_processors.auth',
-     'django.contrib.messages.context_processors.messages',
+    'django.contrib.messages.context_processors.messages',
 )
 
 INSTALLED_APPS = (
@@ -130,6 +131,7 @@ INSTALLED_APPS = (
     'helper',
     'play',
 )
+
 AUTH_PROFILE_MODULE = 'play.UserProfile'
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
