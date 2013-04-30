@@ -3,9 +3,10 @@
 
 {% block content %}
  <form action="" method="POST">{% csrf_token %}
-    Zaloguj się<br/>
+        Zarejestruj się<br/>
         {{ form.as_ul }}
-        <input type="submit" name = "log" value = "Zaloguj"/><br/><br/>
+        <input type="submit" name = "addlog" value = "Utwórz konto i zaloguj"/>
+            <br/><br/>
     </form>
 {% endblock %}
  

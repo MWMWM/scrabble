@@ -88,7 +88,7 @@ def Delete(request, where, word):
         else:
             word_to_delete.delete()
     else:
-        messages.errors(request, 'nie możesz usunąć słowa, \
+        messages.error(request, 'nie możesz usunąć słowa, \
                 które nie należy do Ciebie')
     return HttpResponseRedirect('/help/' + where)
 

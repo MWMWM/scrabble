@@ -17,22 +17,18 @@ def Playing(request, letters, result=0):
         result = int(result)
         word = request.POST.get('word','')
         if Word.objects.filter(word=word).exists():
-            for letter in word:
-                if letter in letters:
-                    letters = letters.replace(letter, "", 1)
-                else:
-                    messages.error(request, 'nie możesz utworzyć tego słowa - \
-                            nie masz odpowiednich literek')
-                    return RenderWithInf('play/main.html', request, {
-                        'letters': letters, 'result':result})
-            for letter in word:
-                letters += NewLetter()
-            result += AddPoints(word)
+            if set(word).issubset(set(letters)):
+                for letter in word:
+                    letters = letters.replace(letter, NewLetter(), 1)
+                result += AddPoints(word)
+                return HttpResponseRedirect(reverse('play:playing', kwargs={
+                    'letters': letters, 'result': result}))
+            else:
+                messages.error(request, 'nie możesz utworzyć tego słowa - \
+                        nie masz odpowiednich literek')
         else:
-            return RenderWithInf('play/main.html', request, {
+             return RenderWithInf('play/main.html', request, {
                 'letters': letters, 'result':result, 'word': word})
-        return HttpResponseRedirect(reverse('play:playing', kwargs={
-            'letters': letters, 'result': result}))
     return RenderWithInf('play/main.html', request, {
         'letters': letters, 'result':result})
 

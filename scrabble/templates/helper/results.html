@@ -1,21 +1,17 @@
 {% extends "base.html" %}
 
-{% block title %} results {% endblock %}
-
-{% block header %}
-    {% if words %} Możesz ułożyć takie słowa, jak:
-    {% else %} Nie możesz ułożyć żadnego słowa ze wszystkich literek.
-    {% endif %}
-{% endblock %}
-    
 {% block content %}
-<ul>{% for word in words %}
-    <li><b>{{ word }}</b>, które zostało dodane przez 
+    {% if words %} Możesz ułożyć takie słowa, jak:
+        <ul>{% for word in words %}
+        <li><b>{{ word }}</b>, które zostało dodane przez 
         {% for name in word.added_by.all %}
             <b> {{ name }}</b>{% if forloop.last %}. {% else %}, {% endif %}
-        {% endfor %}
-            <a href = "{{ request.path }}/{{ word }}">usuń to słowo z bazy </a></li>
-    {% endfor %}</ul>
-    <a href = "{% url 'help:main' %}">kolejny zestaw literek </a>
+            {% endfor %}
+        <a href = "{{ request.path }}/{{ word }}">usuń to słowo z bazy </a></li>
+        {% endfor %}</ul>
+    {% else %} Nie możesz ułożyć żadnego słowa ze wszystkich literek.
+    {% endif %}
+
+        <a href = "{% url 'help:main' %}">kolejny zestaw literek </a>
 {% endblock %}
 

@@ -6,26 +6,40 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from scrabble.views import RenderWithInf
+from log.forms import LoggingForm, RegistrationForm
 
 def Login(request, where):
     if request.POST:
-        name = request.POST.get('name', '')
-        password = request.POST.get('password', '')
-        if 'addlog' in request.POST:
+        form = LoggingForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            password = form.cleaned_data['password']
+            person = authenticate(username = name, password = password)
+            if person is not None:
+                login(request, person)
+                return HttpResponseRedirect(where)
+    else:
+        form = LoggingForm()
+    return RenderWithInf('log/login.html', request, {'form': form})
+
+def Register(request, where):
+    if request.POST:
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            password = form.cleaned_data['password']
             if not User.objects.filter(username = name):
                 User.objects.create_user(username = name, password = password)
-        person = authenticate(username = name, password = password)
-        if person is not None:
-            login(request, person)
-            return HttpResponseRedirect(where)
-        else:
-            messages.error(request, 'Błąd: podano nieprawidłowe dane')
-            if User.objects.filter(username = name):
-                messages.error(request, 'taki login istnieje, \
-                        ale hasło nie odpowiada temu kontu')
             else:
-                messages.error(request, 'taki login nie istnieje')
-    return RenderWithInf('log/login.html', request)
+                messages.error(request, 'konto o takim loginie już istnieje')
+            person = authenticate(username = name, password = password)
+            if person is not None:
+                login(request, person)
+                return HttpResponseRedirect(where)
+    else:
+        form = RegistrationForm()
+    return RenderWithInf('log/register.html', request, {'form': form})
+
 
 def Logout(request, where):
     logout(request)

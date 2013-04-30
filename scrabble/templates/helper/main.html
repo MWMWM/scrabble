@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 
-{% block title %} main page for help {% endblock %}
 {% block content %}
 <form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
     Dodaj <br/>
@@ -16,7 +15,7 @@
     z literek:<input type="text" name = "word_to_check"><br/> 
     napisz "*" w przypadku dowolnej litery <br/>
     <input type="submit" name="find" value="Szukaj"/><br/><br/> 
-      </form>
+    </form>
 <a href = '{% url 'play:main' %}'> Przejdź do gry </a>
 {% endblock %}
         

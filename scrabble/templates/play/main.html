@@ -1,21 +1,20 @@
 {% extends "base.html" %}
 
-{% block title %} main page for play {% endblock %}
 {% block content %}
-<script src="/media/board.js"></script>
-Twój aktualny wynik:{{result}}<br/>
-<label for="board"> Plansza:</label> {{board}}<br/>
-Literki: {{letters}}<br/>
-<form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
+    Twój aktualny wynik:{{result}}<br/>
+    <label for="board"></label> {{board}}<br/>
+    Literki:<div id="letters"> {{letters}}</div><br/>
+    <form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
     Twój wyraz: <input type="text" name = "word"> 
     <input type="submit" name = "check" value = "submit"/><br/>
     {% if word %}
         nie możesz utworzyć słowa "{{word}}" - nie ma go w słowniku
         <a href='{% url 'help:add_word' word request.get_full_path %}'> 
         Dodaj je do słownika<br/>
-    {% endif %}
+        {% endif %}<br/>
     <a href='{% url 'play:changeletters' result %}'> Wymień literki </a><br/>
-<a href='{% url 'help:main' %}'> Edytuj bazę słów </a>
+    <a href='{% url 'help:main' %}'> Edytuj bazę słów </a>
+
 </form>
 
 {% endblock %}
