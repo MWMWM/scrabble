@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from scrabble.models import Word, User
 from scrabble.views import RenderWithInf
-from helper.forms import AddForm
+from helper.forms import AddForm, FindForm
 
 def AddPage(request):
     if request.POST:
@@ -26,21 +26,33 @@ def AddPage(request):
             if wordsfile:
                 file = request.FILES['wordsfile']
                 if file:
-                    AddWords(file.read(), request)
+                    AddWords(file.read().decode('utf-8'), request)
                 else:
                     messages.error(request, 'nie wybrano pliku do dodania')
     else:
         form = AddForm()
     return RenderWithInf('helper/add.html', request, {'form': form})
 
-def FindPage(request):
-    if 'find' in request.POST:
-        where = request.POST.get('where', '')
-        word = request.POST.get('word_to_check', '')
-        return HttpResponseRedirect(reverse('help:xxresult', kwargs={
-            'where':where, 'word':word}))
-    return RenderWithInf('helper/find.html', request)
-
+def FindPage(request, word=''):
+    existing_words = []
+    if request.POST:
+        form = FindForm(request.POST)
+        if form.is_valid():
+            where = form.cleaned_data['where']
+            word = form.cleaned_data['letters']
+            if '*' in word:
+                for letter in u'abcdefghijklmnoprstuwyzęóąśłżźćń':
+                    existing_words.extend(Word.objects.filter(
+                        code = Code(word.replace('*', letter)), 
+                        added_by__in = where))
+            else:
+                existing_words = Word.objects.filter(code = Code(word), 
+                    added_by__in = where) 
+    else:
+        form = FindForm()
+    return RenderWithInf('helper/find.html', request, {
+        'form':form, 'word': word, 'words': existing_words, 'whose': 'all'})
+            
 def AddWord(request, word, where):
     if request.user.username:
         if AddOne(word, request.user):
@@ -53,34 +65,13 @@ def AddWords(text, request):
     how_many = 0
     for word in re.split('[\s,?!;:()-]', text):
         if re.search('[."\']', word) == None:
-            how_many += AddOne(word.decode('utf-8'), request.user)
+            how_many += AddOne(word, request.user)
     if how_many == 1:
         messages.info(request, 'dodano słowo')
     elif 1 < how_many < 5:
         messages.info(request, 'dodano ' + str(how_many) + ' słowa')
     else:
         messages.info(request, 'dodano ' + str(how_many) + ' słów')
-    
-def XxResult(request, where, word):
-    letters = u'abcdefghijklmnoprstuwyzęóąśłżźćń'
-    if '*' in word:
-        existing_words = []
-        for letter in letters:
-            if where == 'MyResult':
-                existing_words.extend(Word.objects.filter(
-                    code = Code(word.replace('*', letter)), 
-                    added_by = request.user))
-            else:
-                existing_words.extend(Word.objects.filter(
-                    code = Code(word.replace('*', letter))))
-    else:
-        if where == 'MyResult':
-            existing_words = Word.objects.filter(code = Code(word), 
-                added_by = request.user)
-        else:
-            existing_words = Word.objects.filter(code = Code(word))
-    return RenderWithInf('helper/results.html', request, {
-        'words': existing_words, 'whose': 'all'})
 
 def Delete(request, where, word):
     if request.user.username:
@@ -92,7 +83,7 @@ def Delete(request, where, word):
     else:
         messages.error(request, 'nie możesz usunąć słowa, \
                 które nie należy do Ciebie')
-    return HttpResponseRedirect('/help/' + where)
+    return HttpResponseRedirect(reverse('find'))
 
 def AddOne(word, added_by):
     if word == word.lower() and 1 < len(word) < 9:

@@ -3,12 +3,20 @@
 {% block content %}
 <form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
     Szukaj słowa<br/>
-    <input type="radio" name = "where" value = "DbResult"/>w całej bazie<br/>
-    <input type="radio" name = "where" value = "MyResult"/>wśród moich wyrazów<br/>
-    z literek:<input type="text" name = "word_to_check"><br/> 
-    napisz "*" w przypadku dowolnej litery <br/>
+    {{ form.as_ul }}
     <input type="submit" name="find" value="Szukaj"/><br/><br/> 
     </form>
+{% if words %} Możesz ułożyć takie słowa, jak:
+        <ul>{% for temp_word in words %}
+        <li><b>{{ temp_word }}</b>, które zostało dodane przez 
+        {% for name in temp_word.added_by.all %}
+            <b> {{ name }}</b>{% if forloop.last %}. {% else %}, {% endif %}
+            {% endfor %}
+            <a href = "{{ request.path }}{{ word }}/{{ temp_word }}">usuń to słowo z bazy </a></li>
+        {% endfor %}</ul>
+    {% else %} 
+    {% if word %}Nie możesz ułożyć żadnego słowa ze wszystkich literek. {% endif %}
+    {% endif %}
 
 {% endblock %}
         
