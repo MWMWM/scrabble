@@ -7,8 +7,7 @@ from django.shortcuts import render_to_response
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-
-from helper.models import Word, User
+from scrabble.models import Word, User
 from scrabble.views import RenderWithInf
 from helper.views import Code, AddWord
 
@@ -21,7 +20,7 @@ def Playing(request, letters, result=0):
                 for letter in word:
                     letters = letters.replace(letter, NewLetter(), 1)
                 result += AddPoints(word)
-                return HttpResponseRedirect(reverse('play:playing', kwargs={
+                return HttpResponseRedirect(reverse('playing', kwargs={
                     'letters': letters, 'result': result}))
             else:
                 messages.error(request, 'nie możesz utworzyć tego słowa - \
@@ -32,16 +31,16 @@ def Playing(request, letters, result=0):
     return RenderWithInf('play/main.html', request, {
         'letters': letters, 'result':result})
 
-def ChangeLetters(request, result):
-    letters = "".join(NewLetter() for i in range(8))
+def ChangeLetters(request, result, letters):
     if Word.objects.filter(code = Code(letters)).exists():
         if result > 10:
             result = int(result) - 10
             messages.info(request, 'można było ułożyć słowo')
         else:
             messages.info(request, 'koniec gry - uzyskano ujemną liczbę punktów')
-            return HttpResponseRedirect(reverse('play:main'))
-    return  HttpResponseRedirect(reverse('play:playing', 
+            return HttpResponseRedirect(reverse('play'))
+    letters = "".join(NewLetter() for i in range(8))
+    return  HttpResponseRedirect(reverse('playing', 
         kwargs={'result': result, 'letters': letters}))
 
 def NewLetter():

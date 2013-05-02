@@ -6,19 +6,23 @@
     <link rel="stylesheet" href="/media/style.css">
     </head>
 <body>
-        <div id="loginout">{% block loginout %}
-            <a href = '/Logout{{ request.path }}'> Wyloguj się </a>
-            <a href = '/Login{{ request.path }}'> Zaloguj się </a>
-            <a href = '{% url 'register' request.path %}'> Zarejestuj się </a>
-                    <br/><br/>{% endblock %}</div>
-        <div id="menu">Scrabble helper</div>
-
-        <div id="container">
-            <div id="content">{% block content %} {% endblock %}</div>
-            <div id="informations">{% block informations %}
-            {% for message in messages %}
-                {{message}}{% if forloop.last %}. {% else %}, {% endif %}<br/>
-                {% endfor %}{%endblock %}</div>
+    <div id="loginout">{% block loginout %}
+        <a href = '{% url 'logout' request.path %}'> Wyloguj się </a>
+        <a href = '{% url 'login' request.path %}'> Zaloguj się </a>
+        <a href = '{% url 'register' request.path %}'> Zarejestuj się </a>
+            <br/><br/>{% endblock %}</div>
+    <div id="menu"> {% block menu %}
+        Scrabble helper
+        <label for "play"><a href = '{% url 'find' %}'> Szukacz </a></label>
+        <label for "add"><a href = '{% url 'add' %}'> Dodawacz </a></label>
+        <label for "play"><a href = '{% url 'play' %}'> Graj </a></label>
+        {% endblock %} </div>
+    <div id="container">
+        <div id="content">{% block content %} {% endblock %}</div>
+        <div id="informations">{% block informations %}
+        {% for message in messages %}
+            {{message}}{% if forloop.last %}. {% else %}, {% endif %}<br/>
+            {% endfor %}{%endblock %}</div>
         </div>
     </body>
 </html>

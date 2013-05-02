@@ -8,57 +8,59 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from helper.models import Word, User
+from scrabble.models import Word, User
 from scrabble.views import RenderWithInf
+from helper.forms import AddForm
 
-def Main(request):
+def AddPage(request):
+    if request.POST:
+        form = AddForm(request.POST, request.FILES)
+        if not request.user.username:
+            messages.error(request, 'by dodać jakiekolwiek słowo \
+                    musisz być zalogowany')
+        elif form.is_valid(): 
+            words = form.cleaned_data['words']
+            wordsfile = form.cleaned_data['wordsfile']
+            if words:
+                AddWords(words, request)
+            if wordsfile:
+                file = request.FILES['wordsfile']
+                if file:
+                    AddWords(file.read(), request)
+                else:
+                    messages.error(request, 'nie wybrano pliku do dodania')
+    else:
+        form = AddForm()
+    return RenderWithInf('helper/add.html', request, {'form': form})
+
+def FindPage(request):
     if 'find' in request.POST:
         where = request.POST.get('where', '')
         word = request.POST.get('word_to_check', '')
         return HttpResponseRedirect(reverse('help:xxresult', kwargs={
             'where':where, 'word':word}))
-    if 'add' in request.POST:
-        if not request.user.username:
-            messages.error(request, 'by dodać jakiekolwiek słowo \
-                    musisz być zalogowany')
-        else:
-            where = request.POST.get('howmany', '')
-            if where == 'AddMultiple':
-                AddWords(request)
-            elif where == 'AddOne':
-                word = request.POST.get('word_to_add', '')
-                where = reverse('help:main')
-                return HttpResponseRedirect(reverse('help:add_word', kwargs={
-                    'word':word, 'where_next':where}))
-    return RenderWithInf('helper/main.html', request)
+    return RenderWithInf('helper/find.html', request)
 
-def AddWord(request, word, where_next):
+def AddWord(request, word, where):
     if request.user.username:
         if AddOne(word, request.user):
             messages.info(request, u'Dodano wyraz <{}>'.format(word))
-        else:
-            messages.info(request, u'Słowo <{}> jest już w Twojej bazie'.format(word))
     else:
         messages.error(request, 'by dodać jakiekolwiek słowo musisz być zalogowany')
-    return HttpResponseRedirect(where_next)
+    return HttpResponseRedirect(where)
 
-def AddWords(request):
-    file = request.FILES['plik']
-    if file:
-        text = file.read()
-        how_many = 0
-        for word in re.split('[\s,?!;:()-]', text):
-            if re.search('[."\']', word) == None:
-                how_many += AddOne(word.decode('utf-8'), request.user)
-        if how_many == 1:
-            messages.ifo(request, 'dodano słowo')
-        if 1 < how_many < 5:
-            messages.ifo(request, 'dodano' + str(how_many) + ' słowa')
-        else:
-            messages.info(request, 'dodano ' + str(how_many) + ' słów')
+def AddWords(text, request):
+    how_many = 0
+    for word in re.split('[\s,?!;:()-]', text):
+        if re.search('[."\']', word) == None:
+            how_many += AddOne(word.decode('utf-8'), request.user)
+    if how_many == 1:
+        messages.info(request, 'dodano słowo')
+    elif 1 < how_many < 5:
+        messages.info(request, 'dodano ' + str(how_many) + ' słowa')
     else:
-        messages.error(request, 'nie wybrano pliku do dodania')
-
+        messages.info(request, 'dodano ' + str(how_many) + ' słów')
+    
 def XxResult(request, where, word):
     letters = u'abcdefghijklmnoprstuwyzęóąśłżźćń'
     if '*' in word:

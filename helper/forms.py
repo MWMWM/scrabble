@@ -1,11 +1,14 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from django import forms
+from helper.views import Word
 
-class FinderForm(forms.Form):
-    letters = forms.CharField(max_length=9, label='Twoje obecne literki')
+class AddForm(forms.Form):
+    words = forms.CharField(max_length=200, required=False,
+            label="słowo/a (podaj oddzielane przecinkami)")
+    wordsfile = forms.FileField(required=False,
+            label="plik tekstowy ze słowami, które chcesz dodać") 
+    language = forms.CharField(max_length=2, label="język", 
+            widget=forms.Select(choices=Word.lang_choices))
 
-    def clean_exemple(self):
-        message = self.cleaned_data['message']
-        num_words = len(message.split())
-        if num_words < 4:
-            raise forms.ValidationError('Not enough words!')
-        return message

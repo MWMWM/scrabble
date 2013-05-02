@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
-from log.models import User, UserProfile
+from django.contrib.auth import authenticate
+from scrabble.models import User, UserProfile
+from helper.views import Word
 
-class LoggingForm(forms.Form):
+class LogForm(forms.Form):
     name = forms.CharField(max_length=30, label="login")
     password = forms.CharField(max_length=32, label="hasło", 
         #    error_messages={'required': 'musisz podać hasło'},
@@ -14,13 +16,26 @@ class LoggingForm(forms.Form):
        if not User.objects.filter(username = name).exists():
            raise forms.ValidationError("taki login nie istnieje")
        return name
+    def clean(self):
+       cleaned_data = super(LogForm, self).clean()
+       name = cleaned_data.get('name')
+       password = cleaned_data.get('password')
+       print User.objects.filter(
+                   username = name, password = password)
+       if name and password:
+           person = authenticate(username = name, password = password)
+           if person is None:
+               raise forms.ValidationError("podaj prawidłowe hasło")
+       return cleaned_data
 
-class RegistrationForm(LoggingForm):
+class RegistrationForm(LogForm):
     language = forms.CharField(max_length=2, label="język", 
-            widget=forms.Select(choices=UserProfile.lang_choices))
+            widget=forms.Select(choices=Word.lang_choices))
     def clean_name(self):
        name = self.cleaned_data['name']
        if User.objects.filter(username = name).exists():
            raise forms.ValidationError("taki login już istnieje")
        return name
-
+    def clean(self):
+       cleaned_data = super(LogForm, self).clean()
+       return cleaned_data

@@ -1,5 +1,6 @@
 from django.contrib import admin
-from helper import models
+from scrabble import models
 
 admin.site.register(models.Word)
+admin.site.register(models.UserProfile)
 

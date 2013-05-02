@@ -6,7 +6,8 @@
         Zarejestruj się<br/>
         {{ form.as_ul }}
         <input type="submit" name = "addlog" value = "Utwórz konto i zaloguj"/>
-            <br/><br/>
+        <br/><br/>
+        <a href='{% url 'login' request.path %}'> Zaloguj się </a>
     </form>
 {% endblock %}
  

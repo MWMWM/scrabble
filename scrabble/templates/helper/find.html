@@ -2,13 +2,6 @@
 
 {% block content %}
 <form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
-    Dodaj <br/>
-    <input type="radio" name = "howmany" value = "AddOne"/>słowo
-    <input type="text" name = "word_to_add"><br/>
-    <input type="radio" name = "howmany" value = "AddMultiple"/>słowa
-    <input type="file" name = "plik"/><br/>
-    <input type="submit" name = "add" value = "Dodaj"/><br/><br/>
-
     Szukaj słowa<br/>
     <input type="radio" name = "where" value = "DbResult"/>w całej bazie<br/>
     <input type="radio" name = "where" value = "MyResult"/>wśród moich wyrazów<br/>
@@ -16,6 +9,6 @@
     napisz "*" w przypadku dowolnej litery <br/>
     <input type="submit" name="find" value="Szukaj"/><br/><br/> 
     </form>
-<a href = '{% url 'play:main' %}'> Przejdź do gry </a>
+
 {% endblock %}
         

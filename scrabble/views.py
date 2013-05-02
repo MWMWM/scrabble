@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from helper.models import Word
+from scrabble.models import Word
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.contrib import messages
