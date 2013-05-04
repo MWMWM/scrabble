@@ -16,3 +16,6 @@ class FindForm(forms.Form):
     letters = forms.CharField(max_length=10, label=" z literek")
     where = forms.ModelMultipleChoiceField(queryset=User.objects.all(),
             label="wykorzystując dane użytkownika/użytkowników")
+    language = forms.CharField(max_length=2, label="język", 
+            widget=forms.Select(choices=Word.lang_choices))
+

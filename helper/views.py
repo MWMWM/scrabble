@@ -21,12 +21,13 @@ def AddPage(request):
         elif form.is_valid(): 
             words = form.cleaned_data['words']
             wordsfile = form.cleaned_data['wordsfile']
+            language = form.cleaned_data['language']
             if words:
-                AddWords(words, request)
+                AddWords(words, language, request)
             if wordsfile:
                 file = request.FILES['wordsfile']
                 if file:
-                    AddWords(file.read().decode('utf-8'), request)
+                    AddWords(file.read().decode('utf-8'), language, request)
                 else:
                     messages.error(request, 'nie wybrano pliku do dodania')
     else:
@@ -40,14 +41,15 @@ def FindPage(request, word=''):
         if form.is_valid():
             where = form.cleaned_data['where']
             word = form.cleaned_data['letters']
+            language = form.cleaned_data['language']
             if '*' in word:
                 for letter in u'abcdefghijklmnoprstuwyzęóąśłżźćń':
                     existing_words.extend(Word.objects.filter(
                         code = Code(word.replace('*', letter)), 
-                        added_by__in = where))
+                        added_by__in = where, language = language))
             else:
                 existing_words = Word.objects.filter(code = Code(word), 
-                    added_by__in = where) 
+                    added_by__in = where, language = language) 
     else:
         form = FindForm()
     return RenderWithInf('helper/find.html', request, {
@@ -55,17 +57,17 @@ def FindPage(request, word=''):
             
 def AddWord(request, word, where):
     if request.user.username:
-        if AddOne(word, request.user):
+        if AddOne(word, language, request.user):
             messages.info(request, u'Dodano wyraz <{}>'.format(word))
     else:
         messages.error(request, 'by dodać jakiekolwiek słowo musisz być zalogowany')
     return HttpResponseRedirect(where)
 
-def AddWords(text, request):
+def AddWords(text, language, request):
     how_many = 0
     for word in re.split('[\s,?!;:()-]', text):
         if re.search('[."\']', word) == None:
-            how_many += AddOne(word, request.user)
+            how_many += AddOne(word, language, request.user)
     if how_many == 1:
         messages.info(request, 'dodano słowo')
     elif 1 < how_many < 5:
@@ -85,9 +87,10 @@ def Delete(request, where, word):
                 które nie należy do Ciebie')
     return HttpResponseRedirect(reverse('find'))
 
-def AddOne(word, added_by):
+def AddOne(word, language, added_by):
     if word == word.lower() and 1 < len(word) < 9:
-        word, created = Word.objects.get_or_create(word = word, code = Code(word))
+        word, created = Word.objects.get_or_create(code = Code(word),
+                word = word, language = language,  points = SetPoints(word))
         if not Word.objects.filter(word = word, added_by = added_by).exists(): 
             word.added_by.add(added_by)
             return 1
@@ -95,4 +98,7 @@ def AddOne(word, added_by):
 
 def Code(word):
     return ''.join(sorted(word[:]))
+
+def SetPoints(word):
+    return len(word)
 

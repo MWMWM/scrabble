@@ -12,7 +12,7 @@
         <a href = '{% url 'register' request.path %}'> Zarejestuj się </a>
             <br/><br/>{% endblock %}</div>
     <div id="menu"> {% block menu %}
-        Scrabble helper
+        <img src="" alt="Scrabble helper" />
         <label for "play"><a href = '{% url 'find' %}'> Szukacz </a></label>
         <label for "add"><a href = '{% url 'add' %}'> Dodawacz </a></label>
         <label for "play"><a href = '{% url 'play' %}'> Graj </a></label>
@@ -23,6 +23,7 @@
         {% for message in messages %}
             {{message}}{% if forloop.last %}. {% else %}, {% endif %}<br/>
             {% endfor %}{%endblock %}</div>
+        język {{lang}}
         </div>
     </body>
 </html>

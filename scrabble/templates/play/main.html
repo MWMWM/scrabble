@@ -5,7 +5,7 @@
     {{board}}<br/>
     Literki:<div id="letters"> {{letters}}</div><br/>
     <form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
-    Twój wyraz: <input type="text" name = "word"> 
+    Twój wyraz: <input type="text" name = "word" onChange = "alert('hm?')"> 
     <input type="submit" name = "check" value = "submit"/><br/>
     {% if word %}
         nie możesz utworzyć słowa "{{word}}" - nie ma go w słowniku

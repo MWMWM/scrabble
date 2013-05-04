@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from scrabble.views import RenderWithInf
-from scrabble.models import User
+from scrabble.models import User, UserProfile
 from log.forms import LogForm, RegistrationForm
 
 def Login(request, where):
@@ -29,8 +29,12 @@ def Register(request, where):
         if form.is_valid():
             name = form.cleaned_data['name']
             password = form.cleaned_data['password']
+            language = form.cleaned_data['language']
             if not User.objects.filter(username = name):
-                User.objects.create_user(username = name, password = password)
+                user = User.objects.create_user(username = name, 
+                        password = password)
+                UserProfile.objects.create(user = user, language = language)
+                print user.userprofile.language
             else:
                 messages.error(request, 'konto o takim loginie już istnieje')
             person = authenticate(username = name, password = password)

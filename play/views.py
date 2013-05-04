@@ -19,7 +19,7 @@ def Playing(request, letters, result=0):
             if set(word).issubset(set(letters)):
                 for letter in word:
                     letters = letters.replace(letter, NewLetter(), 1)
-                result += AddPoints(word)
+                result += word.points
                 return HttpResponseRedirect(reverse('playing', kwargs={
                     'letters': letters, 'result': result}))
             else:
@@ -50,7 +50,3 @@ def NewLetter():
 
 def NewLetters():
     return "".join(NewLetter() for i in range(8))
-
-def AddPoints(word):
-    return len(word)
-
