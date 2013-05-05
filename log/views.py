@@ -29,12 +29,10 @@ def Register(request, where):
         if form.is_valid():
             name = form.cleaned_data['name']
             password = form.cleaned_data['password']
-            language = form.cleaned_data['language']
             if not User.objects.filter(username = name):
                 user = User.objects.create_user(username = name, 
                         password = password)
-                UserProfile.objects.create(user = user, language = language)
-                print user.userprofile.language
+                UserProfile.objects.create(user = user)
             else:
                 messages.error(request, 'konto o takim loginie już istnieje')
             person = authenticate(username = name, password = password)

@@ -21,13 +21,12 @@ def AddPage(request):
         elif form.is_valid(): 
             words = form.cleaned_data['words']
             wordsfile = form.cleaned_data['wordsfile']
-            language = form.cleaned_data['language']
             if words:
-                AddWords(words, language, request)
+                AddWords(request, words)
             if wordsfile:
                 file = request.FILES['wordsfile']
                 if file:
-                    AddWords(file.read().decode('utf-8'), language, request)
+                    AddWords(request, file.read().decode('utf-8'))
                 else:
                     messages.error(request, 'nie wybrano pliku do dodania')
     else:
@@ -41,7 +40,7 @@ def FindPage(request, word=''):
         if form.is_valid():
             where = form.cleaned_data['where']
             word = form.cleaned_data['letters']
-            language = form.cleaned_data['language']
+            language = 'pl'
             if '*' in word:
                 for letter in u'abcdefghijklmnoprstuwyzęóąśłżźćń':
                     existing_words.extend(Word.objects.filter(
@@ -57,14 +56,16 @@ def FindPage(request, word=''):
             
 def AddWord(request, word, where):
     if request.user.username:
+        language = 'pl'
         if AddOne(word, language, request.user):
             messages.info(request, u'Dodano wyraz <{}>'.format(word))
     else:
         messages.error(request, 'by dodać jakiekolwiek słowo musisz być zalogowany')
     return HttpResponseRedirect(where)
 
-def AddWords(text, language, request):
+def AddWords(request, text, language):
     how_many = 0
+    language = 'pl'
     for word in re.split('[\s,?!;:()-]', text):
         if re.search('[."\']', word) == None:
             how_many += AddOne(word, language, request.user)
@@ -75,9 +76,12 @@ def AddWords(text, language, request):
     else:
         messages.info(request, 'dodano ' + str(how_many) + ' słów')
 
-def Delete(request, where, word):
-    if request.user.username:
-        word_to_delete = Word.objects.get(word = word, added_by = request.user)
+def Delete(request, words, word):
+    language = 'pl'
+    word_to_delete = Word.objects.filter(word = word, added_by = request.user,
+            language = language)
+    if word_to_delete:
+        word_to_delete = word_to_delete[0] 
         if word_to_delete.added_by.count() > 1:
             word_to_delete.added_by.remove(request.user)
         else:

@@ -5,11 +5,11 @@
     {{board}}<br/>
     Literki:<div id="letters"> {{letters}}</div><br/>
     <form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
-    Twój wyraz: <input type="text" name = "word" onChange = "alert('hm?')"> 
+    Twój wyraz: <input type="text" name = "word"> 
     <input type="submit" name = "check" value = "submit"/><br/>
     {% if word %}
         nie możesz utworzyć słowa "{{word}}" - nie ma go w słowniku
-        <a href='{% url 'add_word' word request.get_full_path %}'> 
+        <a href='{% url 'add_word' word request.path %}'> 
         Dodaj je do słownika<br/>
         {% endif %}<br/>
     <a href='{% url 'changeletters' result letters %}'> Wymień literki </a><br/>

@@ -15,11 +15,13 @@ def Playing(request, letters, result=0):
     if 'check' in request.POST:
         result = int(result)
         word = request.POST.get('word','')
+        language = 'pl'
         if Word.objects.filter(word=word).exists():
             if set(word).issubset(set(letters)):
                 for letter in word:
                     letters = letters.replace(letter, NewLetter(), 1)
-                result += word.points
+                w = Word.objects.get(word = word, language = language)
+                result += w.points 
                 return HttpResponseRedirect(reverse('playing', kwargs={
                     'letters': letters, 'result': result}))
             else:
@@ -39,14 +41,17 @@ def ChangeLetters(request, result, letters):
         else:
             messages.info(request, 'koniec gry - uzyskano ujemną liczbę punktów')
             return HttpResponseRedirect(reverse('play'))
-    letters = "".join(NewLetter() for i in range(8))
+    language = 'pl'
+    letters = "".join(NewLetter(language) for i in range(8))
     return  HttpResponseRedirect(reverse('playing', 
         kwargs={'result': result, 'letters': letters}))
 
-def NewLetter():
-    #letters = string.ascii_lowercase
-    letters = u'abcdefghijklmnoprstuwyzęóąśłżźćń'
+def NewLetter(language):
+    if language == 'pl':
+        letters = u'abcdefghijklmnoprstuwyzęóąśłżźćń'
+    elif language == 'en':
+        letters = string.ascii_lowercase
     return random.choice(letters)
 
-def NewLetters():
-    return "".join(NewLetter() for i in range(8))
+def NewLetters(language):
+    return "".join(NewLetter(language) for i in range(8))
