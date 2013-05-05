@@ -17,5 +17,7 @@ class Word(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, unique=True, primary_key=True)
     best_score = models.IntegerField(default=0)
+    language = models.CharField(max_length=2, choices=Word.lang_choices, 
+            default='pl')
     def __unicode__(self):
         return self.user.username 

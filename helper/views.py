@@ -13,7 +13,6 @@ from scrabble.views import RenderWithInf
 from helper.forms import AddForm, FindForm
 
 def AddPage(request):
-    print request.session.items()
     if request.POST:
         form = AddForm(request.POST, request.FILES)
         if not request.user.username:
@@ -22,12 +21,13 @@ def AddPage(request):
         elif form.is_valid(): 
             words = form.cleaned_data['words']
             wordsfile = form.cleaned_data['wordsfile']
+            language = form.cleaned_data['language']
             if words:
-                AddWords(words, request)
+                AddWords(words, language, request)
             if wordsfile:
                 file = request.FILES['wordsfile']
                 if file:
-                    AddWords(file.read().decode('utf-8'), request)
+                    AddWords(file.read().decode('utf-8'), language, request)
                 else:
                     messages.error(request, 'nie wybrano pliku do dodania')
     else:
@@ -35,14 +35,13 @@ def AddPage(request):
     return RenderWithInf('helper/add.html', request, {'form': form})
 
 def FindPage(request, word=''):
-    print request.session.items()
     existing_words = []
     if request.POST:
         form = FindForm(request.POST)
         if form.is_valid():
             where = form.cleaned_data['where']
             word = form.cleaned_data['letters']
-            language = request.session.get('word_language', 'pl')
+            language = form.cleaned_data['language']
             if '*' in word:
                 for letter in u'abcdefghijklmnoprstuwyzęóąśłżźćń':
                     existing_words.extend(Word.objects.filter(
@@ -58,16 +57,14 @@ def FindPage(request, word=''):
             
 def AddWord(request, word, where):
     if request.user.username:
-        language = request.session.get('word_language', 'pl')
         if AddOne(word, language, request.user):
             messages.info(request, u'Dodano wyraz <{}>'.format(word))
     else:
         messages.error(request, 'by dodać jakiekolwiek słowo musisz być zalogowany')
     return HttpResponseRedirect(where)
 
-def AddWords(text, request):
+def AddWords(text, language, request):
     how_many = 0
-    language = request.session.get('word_language', 'pl')
     for word in re.split('[\s,?!;:()-]', text):
         if re.search('[."\']', word) == None:
             how_many += AddOne(word, language, request.user)
@@ -78,10 +75,9 @@ def AddWords(text, request):
     else:
         messages.info(request, 'dodano ' + str(how_many) + ' słów')
 
-def Delete(request, words, word):
-    word_to_delete = Word.objects.filter(word = word, added_by = request.user)
-    if word_to_delete:
-        word_to_delete = word_to_delete[0]
+def Delete(request, where, word):
+    if request.user.username:
+        word_to_delete = Word.objects.get(word = word, added_by = request.user)
         if word_to_delete.added_by.count() > 1:
             word_to_delete.added_by.remove(request.user)
         else:

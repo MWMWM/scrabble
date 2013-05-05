@@ -12,17 +12,14 @@ from scrabble.views import RenderWithInf
 from helper.views import Code, AddWord
 
 def Playing(request, letters, result=0):
-    print request.session
     if 'check' in request.POST:
         result = int(result)
         word = request.POST.get('word','')
-        language = request.session.get('language', 'pl')
-        if Word.objects.filter(word=word, language = language).exists():
+        if Word.objects.filter(word=word).exists():
             if set(word).issubset(set(letters)):
                 for letter in word:
                     letters = letters.replace(letter, NewLetter(), 1)
-                w = Word.objects.get(word = word, language = language)
-                result += w.points
+                result += word.points
                 return HttpResponseRedirect(reverse('playing', kwargs={
                     'letters': letters, 'result': result}))
             else:

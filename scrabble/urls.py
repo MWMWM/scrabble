@@ -10,25 +10,18 @@ urlpatterns = patterns('',
         url(r'^admin/', include(admin.site.urls)),
         )
 
-urlpatterns += patterns('scrabble.views',
-        url(r'^(?P<where>.+)/pl', 'ChangeLang', {'lang': 'pl'}, 
-            name='lang_pl'),
-        url(r'^(?P<where>.+)/en', 'ChangeLang', {'lang': 'en'},
-            name='lang_en'),
-        )
-
 urlpatterns += patterns('log.views',
         url(r'^Login(?P<where>.+)', 'Login', name='login'),
         url(r'^Logout(?P<where>.+)', 'Logout', name='logout'),
         url(r'^Register(?P<where>.+)', 'Register', name='register'),
         )
 
-urlpatterns += patterns('helper.views',
+urlpatterns += patterns('helper.views', 
         url(r'^find/$', 'FindPage', name = 'find'),
         url(r'^add/$', 'AddPage', name = 'add'),
-        url(r'^add/(?P<word>\w+)(?P<where>.+)$', 'AddWord', 
+        url(r'^add/(?P<word>\w+)(?P<where>[/\w]+)$', 'AddWord', 
             name='add_word'),
-        url(r'^find/(?P<words>[*\w]+)/(?P<word>\w+)$', 'Delete', 
+        url(r'^find/(?P<where>[*\w]+)/(?P<word>\w+)$', 'Delete', 
             name = 'delete_word'),
         )
 

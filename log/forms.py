@@ -29,6 +29,8 @@ class LogForm(forms.Form):
        return cleaned_data
 
 class RegistrationForm(LogForm):
+    language = forms.CharField(max_length=2, label="język", 
+            widget=forms.Select(choices=Word.lang_choices))
     def clean_name(self):
        name = self.cleaned_data['name']
        if User.objects.filter(username = name).exists():
