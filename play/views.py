@@ -15,11 +15,11 @@ def Playing(request, letters, result=0):
     if 'check' in request.POST:
         result = int(result)
         word = request.POST.get('word','')
-        language = 'pl'
-        if Word.objects.filter(word=word).exists():
+        language = request.session.get('language', 'pl')
+        if Word.objects.filter(word=word, language = language).exists():
             if set(word).issubset(set(letters)):
                 for letter in word:
-                    letters = letters.replace(letter, NewLetter(), 1)
+                    letters = letters.replace(letter, NewLetter(language), 1)
                 w = Word.objects.get(word = word, language = language)
                 result += w.points 
                 return HttpResponseRedirect(reverse('playing', kwargs={
@@ -34,6 +34,7 @@ def Playing(request, letters, result=0):
         'letters': letters, 'result':result})
 
 def ChangeLetters(request, result, letters):
+    print result
     if Word.objects.filter(code = Code(letters)).exists():
         if result > 10:
             result = int(result) - 10

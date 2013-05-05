@@ -10,6 +10,13 @@ urlpatterns = patterns('',
         url(r'^admin/', include(admin.site.urls)),
         )
 
+urlpatterns += patterns('scrabble.views',
+        url(r'^(?P<where>.+)/pl$', 'ChangeLang', {'lang': 'pl'}, 
+            name='lang_pl'),
+        url(r'^(?P<where>.+)/en$', 'ChangeLang', {'lang': 'en'},
+            name='lang_en'),
+        )
+
 urlpatterns += patterns('log.views',
         url(r'^Login(?P<where>.+)', 'Login', name='login'),
         url(r'^Logout(?P<where>.+)', 'Logout', name='logout'),

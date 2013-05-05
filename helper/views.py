@@ -40,7 +40,7 @@ def FindPage(request, word=''):
         if form.is_valid():
             where = form.cleaned_data['where']
             word = form.cleaned_data['letters']
-            language = 'pl'
+            language = request.session.get('language', 'pl')
             if '*' in word:
                 for letter in u'abcdefghijklmnoprstuwyzęóąśłżźćń':
                     existing_words.extend(Word.objects.filter(
@@ -56,16 +56,16 @@ def FindPage(request, word=''):
             
 def AddWord(request, word, where):
     if request.user.username:
-        language = 'pl'
+        language = request.session.get('language', 'pl')
         if AddOne(word, language, request.user):
             messages.info(request, u'Dodano wyraz <{}>'.format(word))
     else:
         messages.error(request, 'by dodać jakiekolwiek słowo musisz być zalogowany')
     return HttpResponseRedirect(where)
 
-def AddWords(request, text, language):
+def AddWords(request, text):
     how_many = 0
-    language = 'pl'
+    language = request.session.get('language', 'pl')
     for word in re.split('[\s,?!;:()-]', text):
         if re.search('[."\']', word) == None:
             how_many += AddOne(word, language, request.user)
@@ -77,7 +77,7 @@ def AddWords(request, text, language):
         messages.info(request, 'dodano ' + str(how_many) + ' słów')
 
 def Delete(request, words, word):
-    language = 'pl'
+    language = request.session.get('language', 'pl')
     word_to_delete = Word.objects.filter(word = word, added_by = request.user,
             language = language)
     if word_to_delete:

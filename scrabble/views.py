@@ -23,7 +23,12 @@ def RenderWithInf(template, request, args={}):
         messages.info(request, 'nie jesteś zalogowany')
     else:
         messages.info(request, u'jesteś zalogowany jako: ' + user.username)
+    lang = request.session.get('language', 'pl')
+    args['lang'] = lang
     return render_to_response (template, args, 
             context_instance=RequestContext(request))
 
-
+def ChangeLang(request, lang, where):
+    print where
+    request.session['language'] = lang
+    return HttpResponseRedirect('/' + where)

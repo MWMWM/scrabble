@@ -23,7 +23,10 @@
         {% for message in messages %}
             {{message}}{% if forloop.last %}. {% else %}, {% endif %}<br/>
             {% endfor %}{%endblock %}</div>
-
+        aktualnie jest: {{lang}}</br>
+        zmień na: 
+        {% ifequal lang 'pl' %}<a href = '{{ request.path }}/en'> english </a>
+        {% else %}<a href = '{{ request.path }}/pl'> polski</a>{% endifequal %}
         </div>
     </body>
 </html>
