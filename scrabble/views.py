@@ -8,27 +8,24 @@ from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 
 def RenderWithInf(template, request, args={}):
+    args['user'] = request.user.username
+    args['lang'] = request.session.get('language', 'pl')
+    return render_to_response (template, args, 
+            context_instance=RequestContext(request))
+
+def ChangeLang(request, lang, where):
+    request.session['language'] = lang
+    return HttpResponseRedirect(where)
+
+def Home(request):
     words_number = Word.objects.distinct().count()
     if words_number ==1:
         messages.info(request, 'w bazie jest obecnie ' + str(words_number) + \
                 ' słowo')
-    elif 1 < words_number < 5:
+    elif 1 < words_number % 10 < 5:
         messages.info(request, 'w bazie są obecnie ' + str(words_number) + \
                 ' słowa')
     else:
         messages.info(request, 'w bazie jest obecnie ' + str(words_number) + \
                 ' słów')
-    user = request.user
-    if not user.username:
-        messages.info(request, 'nie jesteś zalogowany')
-    else:
-        messages.info(request, u'jesteś zalogowany jako: ' + user.username)
-    lang = request.session.get('language', 'pl')
-    args['lang'] = lang
-    return render_to_response (template, args, 
-            context_instance=RequestContext(request))
-
-def ChangeLang(request, lang, where):
-    print where
-    request.session['language'] = lang
-    return HttpResponseRedirect('/' + where)
+    return RenderWithInf('base.html', request)

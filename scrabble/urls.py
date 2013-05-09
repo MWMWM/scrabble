@@ -5,15 +5,16 @@ from play.views import NewLetters
 admin.autodiscover()
 
 urlpatterns = patterns('',
-        url(r'media/(?P<path>.*)$', 'django.views.static.serve', {
+        url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
             'document_root': settings.MEDIA_ROOT}),
         url(r'^admin/', include(admin.site.urls)),
         )
 
 urlpatterns += patterns('scrabble.views',
-        url(r'^(?P<where>.+)/pl$', 'ChangeLang', {'lang': 'pl'}, 
+        url (r'^$', 'Home', name='home'),
+        url(r'^Pl(?P<where>.+)$', 'ChangeLang', {'lang': 'pl'}, 
             name='lang_pl'),
-        url(r'^(?P<where>.+)/en$', 'ChangeLang', {'lang': 'en'},
+        url(r'^En(?P<where>.+)$', 'ChangeLang', {'lang': 'en'},
             name='lang_en'),
         )
 
@@ -33,9 +34,9 @@ urlpatterns += patterns('helper.views',
         )
 
 urlpatterns += patterns('play.views', 
-        url(r'^play/$', 'Playing', {'letters': NewLetters('pl')}, name = 'play'),
-        url(r'^play/(?P<result>\d+)/(?P<letters>\w+)$', 'Playing', 
-            name = 'playing'),
+        url(r'^play/$', 'Main', name = 'play'),
+        url(r'^play/(?P<result>\d+)/(?P<all_letters>\w+)/(?P<temp_letters>\w*)$', 
+            'Playing', name = 'playing'),
         url(r'^changeletters/(?P<result>\d+)(?P<letters>\w+)$', 'ChangeLetters', 
             name = 'changeletters'),
         )

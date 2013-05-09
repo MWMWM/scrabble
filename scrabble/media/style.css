@@ -1,48 +1,53 @@
 body {
    font-family: Georgia, "Times New Roman", Times, serif;
    font-size: 20px;
-   color: #f9f9f9;
 }
 li {
    list-style-type: none;
    line-height: 150%;
 }
 h1 {
-   font-family: Georgia, "Times New Roman", Times, serif;
    font-size: 40px;
    font-weight: bold;
-   color: #000000;
    border-bottom: 1px solid #C6EC8C;
 }
+.icon {
+    border-radius: 5px;
+    text-align: center;
+    background-color: #10367f;
+    color: #1e6be9;
+}
+a:link, a:visited {    
+  color: #1e6be9;    
+}
 #menu {
+    border-radius: 10px;
     background-color: #1e6be9;
+    color: #f9f9f9;
 }
-#container {
-    width: 70%;
-    margin: auto;
-    color: #000000;
-    background-color: #f9f9f9;
-    border-left: 5px solid #10367f;
-}
+
 #loginout {
     text-align: right;
-    font-size: 20px;
+}
+#lang {
+    float: right;
+}
+#container {
+    float: left;
+    margin: auto;
+    background-color: #f9f9f9;
 }
 #container #content {
-    padding: 0 0 20px 0; /*top right bottom left*/
     margin-top: 50px;
     margin-left: 50px;
-
 }
 #container #informations {
     margin: 50px; 
 }
-#container #content #letters {
+#container #content .letters {
     font-size: 50px;
 }
-
-.detail textarea {
-    margin-top: 1em;
-    width: 100%;
-    height: 300px;
+#container #content #id_where {
+    display:none;
 }
+

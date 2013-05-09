@@ -3,11 +3,12 @@
 {% block content %}
 <form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
     Szukaj słowa<br/>
-    {{ form.as_ul }}
+    {{ form.as_ul }} 
     <input type="submit" name="find" value="Szukaj"/><br/><br/> 
-    </form>
+</form>
+
 {% if words %} Możesz ułożyć takie słowa, jak:
-        <ul>{% for temp_word in words %}
+    <ul>{% for temp_word in words %}
         <li><b>{{ temp_word }}</b>, które zostało dodane przez 
         {% for name in temp_word.added_by.all %}
             <b> {{ name }}</b>{% if forloop.last %}. {% else %}, {% endif %}
@@ -16,8 +17,11 @@
                 usuń to słowo z bazy </a></li>
         {% endfor %}</ul>
     {% else %} 
-    {% if word %}Nie możesz ułożyć żadnego słowa ze wszystkich literek. {% endif %}
+    {% if word %} Nie możesz ułożyć żadnego słowa ze wszystkich literek. {% endif %}
     {% endif %}
-
+    {% endblock %}
+{% block for_js %}
+<script src="/media/jquery-1.9.0.min.js" type="text/javascript"></script>
+<script src="/media/find_form.js" type="text/javascript"></script>
 {% endblock %}
         

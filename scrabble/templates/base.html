@@ -4,18 +4,29 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title> Scrabble helper</title>
     <link rel="stylesheet" href="/media/style.css">
+    {% block for_js %}{% endblock %}
     </head>
 <body>
     <div id="loginout">{% block loginout %}
-        <a href = '{% url 'logout' request.path %}'> Wyloguj się </a>
+        {% if user %}
+        <a href = '{% url 'logout' request.path %}'>Wyloguj się </a>
+        <a href = '{% url 'login' request.path %}'> Zaloguj się </a>
+        <br/> jesteś zalogowany jako: {{user}}
+        {% else %}
         <a href = '{% url 'login' request.path %}'> Zaloguj się </a>
         <a href = '{% url 'register' request.path %}'> Zarejestuj się </a>
-            <br/><br/>{% endblock %}</div>
+        <br/> nie jesteś zalogowany
+        {% endif %}
+        {% endblock %}</div>
     <div id="menu"> {% block menu %}
-        <img src="" alt="Scrabble helper" />
-        <label for "play"><a href = '{% url 'find' %}'> Szukacz </a></label>
-        <label for "add"><a href = '{% url 'add' %}'> Dodawacz </a></label>
-        <label for "play"><a href = '{% url 'play' %}'> Graj </a></label>
+        <span class="icon">
+            <a href={% url 'home' %}>Scrabble helper</a></span>
+        <span class="icon">
+            <a href = '{% url 'find' %}'> Szukacz </a></span>
+       <span class="icon">
+           <a href = '{% url 'add' %}'> Dodawacz </a></span>
+       <span class="icon">
+           <a href = '{% url 'play' %}'> Graj </a></span>
         {% endblock %} </div>
     <div id="container">
         <div id="content">{% block content %} {% endblock %}</div>
@@ -23,10 +34,15 @@
         {% for message in messages %}
             {{message}}{% if forloop.last %}. {% else %}, {% endif %}<br/>
             {% endfor %}{%endblock %}</div>
-        aktualnie jest: {{lang}}</br>
-        zmień na: 
-        {% ifequal lang 'pl' %}<a href = '{{ request.path }}/en'> english </a>
-        {% else %}<a href = '{{ request.path }}/pl'> polski</a>{% endifequal %}
+        </div>
+    <div id="lang">
+        aktualnie ustawiony język:<div class="icon">{{lang}}</div><br/>
+        zmień na: <div class="icon">
+        {% ifequal lang 'pl' %}
+        <a href = '{% url 'lang_en' request.path %}'> angielski </a>
+        {% else %}
+        <a href = '{% url 'lang_pl' request.path %}'> polski </a>
+        {% endifequal %}</div>
         </div>
     </body>
 </html>

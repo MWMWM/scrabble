@@ -9,7 +9,7 @@ from helper.views import Word
 class LogForm(forms.Form):
     name = forms.CharField(max_length=30, label="login")
     password = forms.CharField(max_length=32, label="hasło", 
-        #    error_messages={'required': 'musisz podać hasło'},
+            error_messages={'required': 'musisz podać hasło'},
             widget=forms.PasswordInput)
     def clean_name(self):
        name = self.cleaned_data['name']

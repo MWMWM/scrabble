@@ -1,20 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
-    Twój aktualny wynik:{{result}}<br/>
-    {{board}}<br/>
-    Literki:<div id="letters"> {{letters}}</div><br/>
-    <form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
-    Twój wyraz: <input type="text" name = "word"> 
+Twój aktualny wynik:{{result}}<br/>
+Aktualny wyraz:<div class="letters"> {% for letter in temp_letters %}
+    {{letter}}{% endfor %}</div>
+Literki:<div class="letters"> {% for letter in left_letters %}
+    <a href="{{request.path}}{{letter}}">
+        <img src="/media/{{letter}}.jpg" alt="{{letter}}"></a>{% endfor %}
+    </div><br/>
+<form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
     <input type="submit" name = "check" value = "submit"/><br/>
-    {% if word %}
-        nie możesz utworzyć słowa "{{word}}" - nie ma go w słowniku
-        <a href='{% url 'add_word' word request.path %}'> 
+    {% if to_add and temp_letters%}
+        słowa "{{temp_letters}}" nie ma w słowniku
+        <a href='{% url 'add_word' temp_letters request.path %}'> 
         Dodaj je do słownika<br/>
         {% endif %}<br/>
-    <a href='{% url 'changeletters' result letters %}'> Wymień literki </a><br/>
-
+    <a href='{% url 'changeletters' result all_letters %}'> Wymień literki </a><br/>
 </form>
-
 {% endblock %}
 
