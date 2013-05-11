@@ -38,17 +38,41 @@ def FindPage(request, word=''):
     if request.POST:
         form = FindForm(request.POST)
         if form.is_valid():
-            where = form.cleaned_data['where']
             word = form.cleaned_data['letters']
             language = request.session.get('language', 'pl')
-            if '*' in word:
-                for letter in u'abcdefghijklmnoprstuwyzęóąśłżźćń':
-                    existing_words.extend(Word.objects.filter(
-                        code = Code(word.replace('*', letter)), 
-                        added_by__in = where, language = language))
-            else:
-                existing_words = Word.objects.filter(code = Code(word), 
-                    added_by__in = where, language = language) 
+            if form.cleaned_data['how'] == '3':
+                where = form.cleaned_data['where']
+                if '*' in word:
+                    for letter in AllLetters(language):
+                        existing_words.extend(Word.objects.filter(
+                            code = Code(word.replace('*', letter)), 
+                            added_by__in = where, language = language))
+                else:
+                    existing_words = Word.objects.filter(code = Code(word), 
+                        added_by__in = where, language = language) 
+            elif form.cleaned_data['how'] == '2':
+                if '*' in word:
+                    for letter in AllLetters(language):
+                        existing_words.extend(Word.objects.filter(
+                            code = Code(word.replace('*', letter)), 
+                            language = language))
+                else:
+                    existing_words = Word.objects.filter(code = Code(word), 
+                    language = language) 
+            elif form.cleaned_data['how'] == '1':
+                if not request.user.username:
+                    messages.error(request, 'Aby skorzystać z tej opcji \
+                            musisz być zalogowany')
+                else:
+                    where = User.objects.get(username = request.user)
+                    if '*' in word:
+                        for letter in AllLetters(language):
+                            existing_words.extend(Word.objects.filter(
+                                code = Code(word.replace('*', letter)), 
+                                added_by = where, language = language))
+                    else:
+                        existing_words = Word.objects.filter(code = Code(word), 
+                            added_by = where, language = language) 
     else:
         form = FindForm()
     return RenderWithInf('helper/find.html', request, {
@@ -71,7 +95,7 @@ def AddWords(request, text):
             how_many += AddOne(word, language, request.user)
     if how_many == 1:
         messages.info(request, 'dodano słowo')
-    elif 1 < how_many < 5:
+    elif 1 < how_many % 10 < 5:
         messages.info(request, 'dodano ' + str(how_many) + ' słowa')
     else:
         messages.info(request, 'dodano ' + str(how_many) + ' słów')
@@ -105,4 +129,10 @@ def Code(word):
 
 def SetPoints(word):
     return len(word)
+
+def AllLetters(language):
+    if language == 'pl':
+        return u'abcdefghijklmnoprstuwyzęóąśłżźćń'
+    elif language == 'en':
+        return string.ascii_lowercase
 

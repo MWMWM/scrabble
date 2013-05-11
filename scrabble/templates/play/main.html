@@ -2,12 +2,13 @@
 
 {% block content %}
 Twój aktualny wynik:{{result}}<br/>
-Aktualny wyraz:<div class="letters"> {% for letter in temp_letters %}
-    {{letter}}{% endfor %}</div>
-Literki:<div class="letters"> {% for letter in left_letters %}
+Aktualny wyraz:<div class="letters"> 
+    {% for letter in temp_letters %}
+    <a href="{{request.path}}/{{letter}}">
+    <img src="/media/{{letter}}.jpg" alt="{{letter}}"></a>{% endfor %}</div>
+Pozostałe literki:<div class="letters"> {% for letter in left_letters %}
     <a href="{{request.path}}{{letter}}">
-        <img src="/media/{{letter}}.jpg" alt="{{letter}}"></a>{% endfor %}
-    </div><br/>
+    <img src="/media/{{letter}}.jpg" alt="{{letter}}"></a>{% endfor %}</div>
 <form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
     <input type="submit" name = "check" value = "submit"/><br/>
     {% if to_add and temp_letters%}

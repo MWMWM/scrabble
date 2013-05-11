@@ -37,6 +37,8 @@ urlpatterns += patterns('play.views',
         url(r'^play/$', 'Main', name = 'play'),
         url(r'^play/(?P<result>\d+)/(?P<all_letters>\w+)/(?P<temp_letters>\w*)$', 
             'Playing', name = 'playing'),
+        url(r'^play/(?P<result>\d+)/(?P<all_letters>\w+)/(?P<temp_letters>\w*)/(?P<letter>\w)$',
+            'Delete', name = 'delete_letter'),
         url(r'^changeletters/(?P<result>\d+)(?P<letters>\w+)$', 'ChangeLetters', 
             name = 'changeletters'),
         )

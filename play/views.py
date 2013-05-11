@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from scrabble.models import Word, User
 from scrabble.views import RenderWithInf
-from helper.views import Code, AddWord
+from helper.views import Code, AddWord, AllLetters
 
 def Main(request):
     all_letters = NewLetters('pl')
@@ -51,12 +51,13 @@ def ChangeLetters(request, result, letters):
     return  HttpResponseRedirect(reverse('playing', 
         kwargs={'result': result, 'all_letters': letters, 'temp_letters': "" }))
 
+def Delete(request, result, all_letters, temp_letters, letter=''):
+    temp_letters = temp_letters.replace(letter, '', 1)
+    return HttpResponseRedirect(reverse('playing', kwargs={'result':result, 
+        'all_letters': all_letters, 'temp_letters': temp_letters}))
+
 def NewLetter(language):
-    if language == 'pl':
-        letters = u'abcdefghijklmnoprstuwyzęóąśłżźćń'
-    elif language == 'en':
-        letters = string.ascii_lowercase
-    return random.choice(letters)
+    return random.choice(AllLetters(language))
 
 def NewLetters(language):
     return "".join(NewLetter(language) for i in range(8))

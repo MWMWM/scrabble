@@ -20,8 +20,6 @@ class LogForm(forms.Form):
        cleaned_data = super(LogForm, self).clean()
        name = cleaned_data.get('name')
        password = cleaned_data.get('password')
-       print User.objects.filter(
-                   username = name, password = password)
        if name and password:
            person = authenticate(username = name, password = password)
            if person is None:
