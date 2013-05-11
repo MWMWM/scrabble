@@ -50,4 +50,7 @@ a:link, a:visited {
 #container #content #id_where {
     display:none;
 }
+#container #content #where label{
+    display:none;
+}
 
