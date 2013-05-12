@@ -18,7 +18,7 @@ def AddPage(request):
     if request.POST:
         form = AddForm(request.POST, request.FILES)
         if not request.user.username:
-            messages.error(request, 'by dodać jakiekolwiek słowo \
+            messages.error(request, 'By dodać jakiekolwiek słowo \
                     musisz być zalogowany')
         elif form.is_valid(): 
             words = form.cleaned_data['words']
@@ -31,7 +31,7 @@ def AddPage(request):
                     added_words.extend(AddWords(request, 
                         file.read().decode('utf-8')))
                 else:
-                    messages.error(request, 'nie wybrano pliku do dodania')
+                    messages.error(request, 'Nie wybrano pliku do dodania')
     else:
         form = AddForm()
     return RenderWithInf('helper/add.html', request, {'form': form, 
@@ -90,7 +90,7 @@ def AddWord(request, word, where):
         if AddOne(word, language, request.user):
             messages.info(request, u'Dodano wyraz <{}>'.format(word))
     else:
-        messages.error(request, 'by dodać jakiekolwiek słowo musisz być zalogowany')
+        messages.error(request, 'By dodać jakiekolwiek słowo musisz być zalogowany')
     return HttpResponseRedirect(where)
 
 def AddWords(request, text):
@@ -103,14 +103,14 @@ def AddWords(request, text):
                 added_words.append(word)
     how_many = len(added_words)
     if how_many == 1:
-        messages.info(request, 'dodano słowo')
+        messages.info(request, 'Dodano słowo')
     elif 1 < how_many % 10 < 5:
-        messages.info(request, 'dodano ' + str(how_many) + ' słowa')
+        messages.info(request, 'Dodano ' + str(how_many) + ' słowa')
     else:
-        messages.info(request, 'dodano ' + str(how_many) + ' słów')
+        messages.info(request, 'Dodano ' + str(how_many) + ' słów')
     return added_words
 
-def Delete(request, words, word):
+def Delete(request, word, where):
     language = request.session.get('language', 'pl')
     language = Language.objects.get(short = language)
     word_to_delete = Word.objects.filter(word = word, added_by = request.user,
@@ -122,9 +122,9 @@ def Delete(request, words, word):
         else:
             word_to_delete.delete()
     else:
-        messages.error(request, 'nie możesz usunąć słowa, \
+        messages.error(request, 'Nie możesz usunąć słowa, \
                 które nie należy do Ciebie')
-    return HttpResponseRedirect(reverse('find'))
+    return HttpResponseRedirect(where)
 
 def AddOne(word, language, added_by):
     if word == word.lower() and 1 < len(word) < 9:

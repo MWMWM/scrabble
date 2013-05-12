@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-Twój aktualny wynik:{{result}}<br/>
+Twój aktualny wynik: {{result}}<br/>
 Aktualny wyraz:<div class="letters"> 
     {% for letter in temp_letters %}
     <a href="{{request.path}}/{{letter}}">

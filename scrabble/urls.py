@@ -26,7 +26,7 @@ urlpatterns += patterns('helper.views',
         url(r'^add/$', 'AddPage', name = 'add'),
         url(r'^add/(?P<word>\w+)(?P<where>.+)$', 'AddWord', 
             name='add_word'),
-        url(r'^find/(?P<words>[*\w]+)/(?P<word>\w+)$', 'Delete', 
+        url(r'^delete/(?P<word>\w+)/(?P<where>.+)$', 'Delete', 
             name = 'delete_word'),
         )
 

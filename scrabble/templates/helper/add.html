@@ -1,19 +1,25 @@
 {% extends "base.html" %}
 
 {% block content %}
-<form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
-    Dodaj <br/>
-     {{ form.as_ul }}
-    <input type="submit" name = "add" value = "Dodaj"/><br/><br/>
-</form>
-{% endblock %}
+    <form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
+        Dodaj <br/>
+        {{ form.as_ul }}
+        <input type="submit" name = "add" value = "Dodaj"/><br/><br/>
+        </form>
+    {% endblock %}
 {% block informations %}
-{{block.super}}
-{% if added_words %}
-takie jak: 
-{% for word in added_words %}
-        {{word}}{% if forloop.last %}. {% else %}, {% endif %} 
-        {% endfor %}
+    {{block.super}}
+    {% if added_words %}
+        {% if added_words|length == 1 %}
+            To słowo to:
+        {% else %}
+            Te słowa to: 
+            {% endif %}
+        {% for word in added_words %}
+            <li>{{word}}
+            <a href = "{% url 'delete_word' word request.path%}">
+                usuń to słowo z bazy </a>
+            {% if forloop.last %}. {% else %}, {% endif %}</li>
+            {% endfor %}
         {% endif %}
-{% if added_words|length > 100 %} i inne {% endif %}
 {% endblock %}
