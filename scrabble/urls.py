@@ -12,10 +12,7 @@ urlpatterns = patterns('',
 
 urlpatterns += patterns('scrabble.views',
         url (r'^$', 'Home', name='home'),
-        url(r'^Pl(?P<where>.+)$', 'ChangeLang', {'lang': 'pl'}, 
-            name='lang_pl'),
-        url(r'^En(?P<where>.+)$', 'ChangeLang', {'lang': 'en'},
-            name='lang_en'),
+        url(r'^Lang/(?P<lang>\w\w)$', 'ChangeLang', name='change_lang'),
         )
 
 urlpatterns += patterns('log.views',

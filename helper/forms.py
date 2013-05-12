@@ -18,14 +18,8 @@ class FindForm(forms.Form):
     where = forms.ModelMultipleChoiceField(
             queryset=User.objects.all(),
             label="wykorzystując dane użytkownika/użytkowników",
-            #widget=forms.SelectMultiple
+            widget=forms.SelectMultiple,
             #widget=forms.CheckboxSelectMultiple,
-            #widget=forms.HiddenInput(),
             required=False
             )
-    #def clean_how(self):
-     #   how = self.cleaned_data['how']
-      #  if not request.user.username and how == '1':
-       #     raise forms.ValidationError("aby skorzystać z tej opcji \
-        #            musisz być zalogowany')
-        #return how
+

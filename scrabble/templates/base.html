@@ -5,47 +5,59 @@
     <title> Scrabble helper</title>
     <link rel="stylesheet" href="/media/style.css">
     <script src="/media/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+                {% for language in languages %}
+                $('#lang_{{language.short}}').bind('click', function(){
+                    $.ajax({
+                        type: "GET",
+                        dataType: "JSON",
+                        url: "{% url 'change_lang' language.short %}",
+                        success: function(l){
+                            $("#temp_lang").text(l.lang)
+                            $("#lang_"+l.lang).text("{{lang}}")
+                        }
+                        })
+                    return false
+                    })
+                {% endfor %}
+                })
+        </script>
     {% block for_js %}{% endblock %}
     </head>
-<body>
+    <body>
     <div id="loginout">{% block loginout %}
         {% if user %}
-        <a href = '{% url 'logout' request.path %}'>Wyloguj się </a>
-        <a href = '{% url 'login' request.path %}'> Zaloguj się </a>
-        <br/> jesteś zalogowany jako: {{user}}
+            <a href = '{% url 'logout' request.path %}'>Wyloguj się </a>
+            <a href = '{% url 'login' request.path %}'> Zaloguj się </a>
+            <br/> jesteś zalogowany jako: {{user}}
         {% else %}
-        <a href = '{% url 'login' request.path %}'> Zaloguj się </a>
-        <a href = '{% url 'register' request.path %}'> Zarejestuj się </a>
-        <br/> nie jesteś zalogowany
-        {% endif %}
-        {% endblock %}</div>
+            <a href = '{% url 'login' request.path %}'> Zaloguj się </a>
+            <a href = '{% url 'register' request.path %}'> Zarejestuj się </a>
+            <br/> nie jesteś zalogowany
+        {% endif %}{% endblock %}</div>
     <div id="menu"> {% block menu %}
-        <span class="icon">
+        <span class="menu_icon">
             <a href={% url 'home' %}>Scrabble helper</a></span>
-        <span class="icon">
+        <span class="menu_icon">
             <a href = '{% url 'find' %}'> Szukacz </a></span>
-       <span class="icon">
+       <span class="menu_icon">
            <a href = '{% url 'add' %}'> Dodawacz </a></span>
-       <span class="icon">
-           <a href = '{% url 'play' %}'> Graj </a></span>
-        {% endblock %} </div>
+       <span class="menu_icon">
+           <a href = '{% url 'play' %}'> Graj </a></span>{% endblock %} </div>
     <div id="container">
         <div id="content">{% block content %} {% endblock %}</div>
         <div id="informations">{% block informations %}
         {% for message in messages %}
             {{message}}{% if forloop.last %}. {% else %}, {% endif %}<br/>
-            {% endfor %}{%endblock %}</div>
-        </div>
+            {% endfor %}{%endblock %}</div></div>
     <div id="lang">
-        aktualnie ustawiony język:<div class="icon">{{lang}}</div><br/>
-        zmień na: <div class="icon">
-        {% ifequal lang 'pl' %}
-        <a href = '{% url 'lang_en' request.path %}'> angielski </a>
-        {% else %}
-        <a href = '{% url 'lang_pl' request.path %}'> polski </a>
-        {% endifequal %}</div>
-        </div>
-        {% block last %}
-        {% endblock %}
+        aktualnie ustawiony język:<div class="icon" id="temp_lang">{{lang}}</div><br/>
+        zmień na:
+        {% for language in languages %} {% ifnotequal lang language.short %}
+            <div class="icon">
+            <a href = '' id="lang_{{language.short}}">
+            {{language.short}} </a></div>
+    {% endifnotequal %}{% endfor %}</div>
     </body>
 </html>

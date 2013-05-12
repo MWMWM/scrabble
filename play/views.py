@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import string
+
 import random
 from collections import Counter
 from django.http import HttpResponseRedirect
@@ -8,18 +8,21 @@ from django.shortcuts import render_to_response
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from scrabble.models import Word, User
+from scrabble.models import Word, User, Language
 from scrabble.views import RenderWithInf
-from helper.views import Code, AddWord, AllLetters
+from helper.views import Code, AddWord
 
 def Main(request):
-    all_letters = NewLetters('pl')
+    language = request.session.get('language', 'pl')
+    language = Language.objects.get(short=language)
+    all_letters = NewLetters(language)
     return HttpResponseRedirect(reverse('playing', kwargs={
         'result': 0, 'all_letters': all_letters, 'temp_letters': ""}))
 
 def Playing(request, result, all_letters, temp_letters):
     left_letters = list((Counter(all_letters) - Counter(temp_letters)).elements())
     language = request.session.get('language', 'pl')
+    language = Language.objects.get(short=language)
     if not Word.objects.filter(word=temp_letters, language = language).exists():
         to_add = True
     else:
@@ -47,6 +50,7 @@ def ChangeLetters(request, result, letters):
             messages.info(request, 'koniec gry - uzyskano ujemną liczbę punktów')
             return HttpResponseRedirect(reverse('play'))
     language = request.session.get('lang', 'pl')
+    language = Language.objects.get(short=language)
     letters = "".join(NewLetter(language) for i in range(8))
     return  HttpResponseRedirect(reverse('playing', 
         kwargs={'result': result, 'all_letters': letters, 'temp_letters': "" }))
@@ -57,7 +61,7 @@ def Delete(request, result, all_letters, temp_letters, letter=''):
         'all_letters': all_letters, 'temp_letters': temp_letters}))
 
 def NewLetter(language):
-    return random.choice(AllLetters(language))
+    return random.choice(language.letters)
 
 def NewLetters(language):
     return "".join(NewLetter(language) for i in range(8))

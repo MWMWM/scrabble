@@ -1,12 +1,13 @@
 $(document).ready(function(){
-    $('#id_how').change(function(){
-    var option = $('#id_how').val();
+    $('#id_how').bind('click', function(){
+    var option = $('#id_how').val()
     if (option == 3){
-        $('#id_where').css('display', 'block');
-        $('label[for="id_where"]').css('display', 'block');
+        $('#id_where').show()
+        $('label[for="id_where"]').show()
     }
     else{
-        $('label[for="id_where"]').css('display', 'none');
+        $('#id_where').hide()
+        $('label[for="id_where"]').hide()
     }
-});
-});
+})
+})

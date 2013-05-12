@@ -1,13 +1,18 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+class Language(models.Model):
+    short = models.CharField(max_length = 2, unique=True)
+    name = models.CharField(max_length = 20)
+    letters = models.CharField(max_length = 100)
+    def __unicode__(self):
+        return self.name
+
 class Word(models.Model):
     code = models.CharField(max_length = 9, db_index=True) 
     word = models.CharField(max_length = 9)
     added_by = models.ManyToManyField(User)
-    lang_choices = (('pl', 'polski'), ('en', 'english'),)
-    language = models.CharField(max_length=2, choices=lang_choices, 
-            default='pl')
+    language = models.ForeignKey(Language) 
     points = models.IntegerField()
     class Meta:
         ordering = ('points', 'word')
@@ -18,4 +23,4 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, unique=True, primary_key=True)
     best_score = models.IntegerField(default=0)
     def __unicode__(self):
-        return self.user.username 
+        return self.user.username

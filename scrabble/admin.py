@@ -3,4 +3,4 @@ from scrabble import models
 
 admin.site.register(models.Word)
 admin.site.register(models.UserProfile)
-
+admin.site.register(models.Language)

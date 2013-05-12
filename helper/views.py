@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import string
 import itertools, urllib, re
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -8,11 +9,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from scrabble.models import Word, User
+from scrabble.models import Word, User, Language
 from scrabble.views import RenderWithInf
 from helper.forms import AddForm, FindForm
 
 def AddPage(request):
+    added_words = []
     if request.POST:
         form = AddForm(request.POST, request.FILES)
         if not request.user.username:
@@ -22,16 +24,18 @@ def AddPage(request):
             words = form.cleaned_data['words']
             wordsfile = form.cleaned_data['wordsfile']
             if words:
-                AddWords(request, words)
+                added_words.extend(AddWords(request, words))
             if wordsfile:
                 file = request.FILES['wordsfile']
                 if file:
-                    AddWords(request, file.read().decode('utf-8'))
+                    added_words.extend(AddWords(request, 
+                        file.read().decode('utf-8')))
                 else:
                     messages.error(request, 'nie wybrano pliku do dodania')
     else:
         form = AddForm()
-    return RenderWithInf('helper/add.html', request, {'form': form})
+    return RenderWithInf('helper/add.html', request, {'form': form, 
+        'added_words': added_words})
 
 def FindPage(request, word=''):
     existing_words = []
@@ -40,10 +44,11 @@ def FindPage(request, word=''):
         if form.is_valid():
             word = form.cleaned_data['letters']
             language = request.session.get('language', 'pl')
+            language = Language.objects.get(short = language)
             if form.cleaned_data['how'] == '3':
                 where = form.cleaned_data['where']
                 if '*' in word:
-                    for letter in AllLetters(language):
+                    for letter in language.letters:
                         existing_words.extend(Word.objects.filter(
                             code = Code(word.replace('*', letter)), 
                             added_by__in = where, language = language))
@@ -52,7 +57,7 @@ def FindPage(request, word=''):
                         added_by__in = where, language = language) 
             elif form.cleaned_data['how'] == '2':
                 if '*' in word:
-                    for letter in AllLetters(language):
+                    for letter in language.letters:
                         existing_words.extend(Word.objects.filter(
                             code = Code(word.replace('*', letter)), 
                             language = language))
@@ -66,7 +71,7 @@ def FindPage(request, word=''):
                 else:
                     where = User.objects.get(username = request.user)
                     if '*' in word:
-                        for letter in AllLetters(language):
+                        for letter in language.letters:
                             existing_words.extend(Word.objects.filter(
                                 code = Code(word.replace('*', letter)), 
                                 added_by = where, language = language))
@@ -81,6 +86,7 @@ def FindPage(request, word=''):
 def AddWord(request, word, where):
     if request.user.username:
         language = request.session.get('language', 'pl')
+        language = Language.objects.get(short = language) 
         if AddOne(word, language, request.user):
             messages.info(request, u'Dodano wyraz <{}>'.format(word))
     else:
@@ -88,20 +94,25 @@ def AddWord(request, word, where):
     return HttpResponseRedirect(where)
 
 def AddWords(request, text):
-    how_many = 0
+    added_words = []
     language = request.session.get('language', 'pl')
+    language = Language.objects.get(short = language)
     for word in re.split('[\s,?!;:()-]', text):
         if re.search('[."\']', word) == None:
-            how_many += AddOne(word, language, request.user)
+            if AddOne(word, language, request.user):
+                added_words.append(word)
+    how_many = len(added_words)
     if how_many == 1:
         messages.info(request, 'dodano słowo')
     elif 1 < how_many % 10 < 5:
         messages.info(request, 'dodano ' + str(how_many) + ' słowa')
     else:
         messages.info(request, 'dodano ' + str(how_many) + ' słów')
+    return added_words
 
 def Delete(request, words, word):
     language = request.session.get('language', 'pl')
+    language = Language.objects.get(short = language)
     word_to_delete = Word.objects.filter(word = word, added_by = request.user,
             language = language)
     if word_to_delete:
@@ -127,12 +138,5 @@ def AddOne(word, language, added_by):
 def Code(word):
     return ''.join(sorted(word[:]))
 
-def SetPoints(word):
+def SetPoints(word): 
     return len(word)
-
-def AllLetters(language):
-    if language == 'pl':
-        return u'abcdefghijklmnoprstuwyzęóąśłżźćń'
-    elif language == 'en':
-        return string.ascii_lowercase
-

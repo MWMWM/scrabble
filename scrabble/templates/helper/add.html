@@ -5,6 +5,15 @@
     Dodaj <br/>
      {{ form.as_ul }}
     <input type="submit" name = "add" value = "Dodaj"/><br/><br/>
-    </form>
+</form>
 {% endblock %}
-      
+{% block informations %}
+{{block.super}}
+{% if added_words %}
+takie jak: 
+{% for word in added_words %}
+        {{word}}{% if forloop.last %}. {% else %}, {% endif %} 
+        {% endfor %}
+        {% endif %}
+{% if added_words|length > 100 %} i inne {% endif %}
+{% endblock %}
