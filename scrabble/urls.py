@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.conf import settings
 from django.contrib import admin
-from play.views import NewLetters
+
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -19,6 +19,7 @@ urlpatterns += patterns('log.views',
         url(r'^Login(?P<where>.+)', 'Login', name='login'),
         url(r'^Logout(?P<where>.+)', 'Logout', name='logout'),
         url(r'^Register(?P<where>.+)', 'Register', name='register'),
+        url(r'^AccountSettings', 'AccountSettings', name='account_settings'),
         )
 
 urlpatterns += patterns('helper.views', 

@@ -35,3 +35,12 @@ class RegistrationForm(LogForm):
     def clean(self):
        cleaned_data = super(LogForm, self).clean()
        return cleaned_data
+
+class AccountForm(forms.ModelForm):
+    password2 = forms.CharField(max_length=32, label="Powtórz hasło",
+            widget=forms.PasswordInput)
+    prev_password = forms.CharField(max_length=32, label="Poprzednie hasło",
+            widget=forms.PasswordInput)
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'password']

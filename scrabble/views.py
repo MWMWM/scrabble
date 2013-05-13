@@ -17,19 +17,17 @@ def RenderWithInf(template, request, args={}):
 
 def ChangeLang(request, lang):
     request.session['language'] = lang
-    data = {'lang': lang, }
-    data = simplejson.dumps(data)
-    return HttpResponse(data)
+    return HttpResponse()
 
 def Home(request):
     words_number = Word.objects.distinct().count()
     if words_number ==1:
-        messages.info(request, 'w bazie jest obecnie ' + str(words_number) + \
+        messages.info(request, 'W bazie jest obecnie ' + str(words_number) + \
                 ' słowo')
     elif 1 < words_number % 10 < 5:
-        messages.info(request, 'w bazie są obecnie ' + str(words_number) + \
+        messages.info(request, 'W bazie są obecnie ' + str(words_number) + \
                 ' słowa')
     else:
-        messages.info(request, 'w bazie jest obecnie ' + str(words_number) + \
+        messages.info(request, 'W bazie jest obecnie ' + str(words_number) + \
                 ' słów')
     return RenderWithInf('base.html', request)

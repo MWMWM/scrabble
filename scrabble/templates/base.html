@@ -11,11 +11,9 @@
                 $('#lang_{{language.short}}').bind('click', function(){
                     $.ajax({
                         type: "GET",
-                        dataType: "JSON",
                         url: "{% url 'change_lang' language.short %}",
-                        success: function(l){
-                            $("#temp_lang").text(l.lang)
-                            $("#lang_"+l.lang).text("{{lang}}")
+                        success: function(){
+                        window.location.reload();
                         }
                         })
                     return false
@@ -40,11 +38,18 @@
         <span class="menu_icon">
             <a href={% url 'home' %}>Scrabble helper</a></span>
         <span class="menu_icon">
-            <a href = '{% url 'find' %}'> Szukacz </a></span>
+            <a href = '{% url 'find' %}'> Szukaj słów</a></span>
+        {% if request.user.is_authenticated %}
+            <span class="menu_icon">
+            <a href = '{% url 'add' %}'> Dodaj słowa</a></span>
+            {% endif %}
        <span class="menu_icon">
-           <a href = '{% url 'add' %}'> Dodawacz </a></span>
-       <span class="menu_icon">
-           <a href = '{% url 'play' %}'> Graj </a></span>{% endblock %} </div>
+            <a href = '{% url 'play' %}'> Graj</a></span>{% endblock %}
+       {% if request.user.is_authenticated %}
+            <span class="menu_icon">
+            <a href = '{% url 'account_settings' %}'> Ustawienia konta</a></span>
+       {% endif %}
+</div>
     <div id="container">
         <div id="content">{% block content %} {% endblock %}</div>
         <div id="informations">{% block informations %}
@@ -52,12 +57,13 @@
             {{message}}{% if forloop.last %}. {% else %}, {% endif %}<br/>
             {% endfor %}{%endblock %}</div></div>
     <div id="lang">
-        aktualnie ustawiony język:<div class="icon" id="temp_lang">{{lang}}</div><br/>
+        aktualnie ustawiony język:
+        <div class="icon" id="lang_{{lang}}">{{lang}}</div>
         zmień na:
         {% for language in languages %} {% ifnotequal lang language.short %}
             <div class="icon">
-            <a href = '' id="lang_{{language.short}}">
-            {{language.short}} </a></div>
+                <a href = '' id="lang_{{language.short}}">
+                    {{language.short}} </a></div><br/>
     {% endifnotequal %}{% endfor %}</div>
     </body>
 </html>

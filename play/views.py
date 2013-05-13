@@ -15,7 +15,7 @@ from helper.views import Code, AddWord
 def Main(request):
     language = request.session.get('language', 'pl')
     language = Language.objects.get(short=language)
-    all_letters = NewLetters(language)
+    all_letters = "".join(NewLetter(language) for i in range(8))
     return HttpResponseRedirect(reverse('playing', kwargs={
         'result': 0, 'all_letters': all_letters, 'temp_letters': ""}))
 
@@ -27,9 +27,8 @@ def Playing(request, result, all_letters, temp_letters):
         to_add = True
     else:
         to_add = False
-    if 'check' in request.POST:
-        result = int(result)
-        if Word.objects.filter(word=temp_letters, language = language).exists():
+        if 'check' in request.POST:
+            result = int(result)
             for letter in temp_letters:
                 all_letters = all_letters.replace(letter, NewLetter(language),1)
             w = Word.objects.get(word = temp_letters, language = language)
@@ -42,16 +41,16 @@ def Playing(request, result, all_letters, temp_letters):
         'temp_letters': temp_letters, 'to_add': to_add})
 
 def ChangeLetters(request, result, letters):
-    if Word.objects.filter(code = Code(letters)).exists():
-        if result > 10:
-            result = int(result) - 10
-            messages.info(request, 'można było ułożyć słowo ze wszystkich literek')
-        else:
-            messages.info(request, 'koniec gry - uzyskano ujemną liczbę punktów')
-            return HttpResponseRedirect(reverse('play'))
     language = request.session.get('lang', 'pl')
     language = Language.objects.get(short=language)
-    letters = "".join(NewLetter(language) for i in range(8))
+    if Word.objects.filter(code = Code(letters), language = language).exists():
+        if result > 10:
+            result = int(result) - 10
+            messages.info(request, 'Można było ułożyć słowo ze wszystkich literek')
+        else:
+            messages.info(request, 'Koniec gry - uzyskano ujemną liczbę punktów')
+            return HttpResponseRedirect(reverse('play'))
+        letters = "".join(NewLetter(language) for i in range(8))
     return  HttpResponseRedirect(reverse('playing', 
         kwargs={'result': result, 'all_letters': letters, 'temp_letters': "" }))
 
@@ -63,5 +62,3 @@ def Delete(request, result, all_letters, temp_letters, letter=''):
 def NewLetter(language):
     return random.choice(language.letters)
 
-def NewLetters(language):
-    return "".join(NewLetter(language) for i in range(8))

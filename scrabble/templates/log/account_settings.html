@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+ <form action="" method="POST">{% csrf_token %}
+        {{ form.as_ul }}
+        <input type="submit" name = "" value = "Zachowaj zmiany"/>
+        <br/><br/>
+    </form>
+{% endblock %}
+ 

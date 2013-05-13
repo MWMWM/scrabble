@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from scrabble.views import RenderWithInf
 from scrabble.models import User, UserProfile
-from log.forms import LogForm, RegistrationForm
+from log.forms import LogForm, RegistrationForm, AccountForm
 
 def Login(request, where):
     if request.POST:
@@ -46,3 +46,13 @@ def Register(request, where):
 def Logout(request, where):
     logout(request)
     return HttpResponseRedirect(where)
+
+def AccountSettings(request):
+    if request.POST:
+        form = AccountForm(request.POST)
+        if form.is_valid():
+           form.save()
+    else:
+        form = AccountForm()
+    print form
+    return RenderWithInf('log/account_settings.html', request, {'form': form})
