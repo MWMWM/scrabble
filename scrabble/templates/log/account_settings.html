@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+Na razie można tylko zmieniać hasło
  <form action="" method="POST">{% csrf_token %}
         {{ form.as_ul }}
         <input type="submit" name = "" value = "Zachowaj zmiany"/>

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from scrabble.models import Word, Language
+from scrabble.models import Word, Language, User
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.contrib import messages
@@ -30,4 +30,5 @@ def Home(request):
     else:
         messages.info(request, 'W bazie jest obecnie ' + str(words_number) + \
                 ' słów')
-    return RenderWithInf('base.html', request)
+    users = User.objects.all()
+    return RenderWithInf('scrabble/home.html', request, {'users': users})

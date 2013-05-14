@@ -19,7 +19,8 @@ urlpatterns += patterns('log.views',
         url(r'^Login(?P<where>.+)', 'Login', name='login'),
         url(r'^Logout(?P<where>.+)', 'Logout', name='logout'),
         url(r'^Register(?P<where>.+)', 'Register', name='register'),
-        url(r'^AccountSettings', 'AccountSettings', name='account_settings'),
+        url(r'^AccountSettings/(?P<username>[\w\d]+)', 'AccountSettings', 
+            name='account_settings'),
         )
 
 urlpatterns += patterns('helper.views', 

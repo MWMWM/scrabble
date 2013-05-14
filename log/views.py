@@ -3,7 +3,9 @@
 
 from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
+from django.core.urlresolvers import reverse
 from scrabble.views import RenderWithInf
 from scrabble.models import User, UserProfile
 from log.forms import LogForm, RegistrationForm, AccountForm
@@ -47,12 +49,18 @@ def Logout(request, where):
     logout(request)
     return HttpResponseRedirect(where)
 
-def AccountSettings(request):
-    if request.POST:
-        form = AccountForm(request.POST)
-        if form.is_valid():
-           form.save()
+def AccountSettings(request, username):
+    if request.user.username == username:
+        if request.POST:
+            form = AccountForm(user=request.user, data=request.POST)
+            if form.is_valid():
+                user = User.objects.get(username = username)
+                user.set_password(form.cleaned_data['password'])
+                user.save()
+                messages.info(request, "Twoje hasło zostało zmienione")
+        else:
+            form = AccountForm(user = request.user)
     else:
-        form = AccountForm()
-    print form
+        messages.error(request, "Nie masz prawa edytować tamtej strony")
+        return HttpResponseRedirect(reverse('home'))
     return RenderWithInf('log/account_settings.html', request, {'form': form})

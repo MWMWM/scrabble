@@ -47,7 +47,7 @@
             <a href = '{% url 'play' %}'> Graj</a></span>{% endblock %}
        {% if request.user.is_authenticated %}
             <span class="menu_icon">
-            <a href = '{% url 'account_settings' %}'> Ustawienia konta</a></span>
+            <a href = '{% url 'account_settings' request.user.username %}'> Ustawienia konta</a></span>
        {% endif %}
 </div>
     <div id="container">

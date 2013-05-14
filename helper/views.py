@@ -8,7 +8,6 @@ from django.shortcuts import render_to_response
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.core.urlresolvers import reverse
 from scrabble.models import Word, User, Language
 from scrabble.views import RenderWithInf
 from helper.forms import AddForm, FindForm
@@ -81,7 +80,7 @@ def FindPage(request, word=''):
     else:
         form = FindForm()
     return RenderWithInf('helper/find.html', request, {
-        'form':form, 'word': word, 'words': existing_words, 'whose': 'all'})
+        'form':form, 'word': word, 'words': existing_words})
             
 def AddWord(request, word, where):
     if request.user.username:
