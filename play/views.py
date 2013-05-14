@@ -3,12 +3,12 @@
 
 import random
 from collections import Counter
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from scrabble.models import Word, User, Language
+from scrabble.models import Word, User, Language, UserProfile
 from scrabble.views import RenderWithInf
 from helper.views import Code, AddWord
 
@@ -58,6 +58,15 @@ def Delete(request, result, all_letters, temp_letters, letter=''):
     temp_letters = temp_letters.replace(letter, '', 1)
     return HttpResponseRedirect(reverse('playing', kwargs={'result':result, 
         'all_letters': all_letters, 'temp_letters': temp_letters}))
+
+def Save(request, score):
+    player = UserProfile.objects.get(user = request.user)
+    score = int(score)
+    if player.best_score < score:
+        player.best_score = score
+        player.save()
+    print player.best_score
+    return HttpResponse()
 
 def NewLetter(language):
     return random.choice(language.letters)

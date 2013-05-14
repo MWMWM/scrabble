@@ -40,4 +40,5 @@ urlpatterns += patterns('play.views',
             'Delete', name = 'delete_letter'),
         url(r'^changeletters/(?P<result>\d+)(?P<letters>\w+)$', 'ChangeLetters', 
             name = 'changeletters'),
+        url(r'^save/(?P<score>\d+)$', 'Save', name = 'save_game'),
         )
