@@ -1,16 +1,4 @@
 {% extends "base.html" %}
-{% block for_js %}
- <script type="text/javascript">
-        $(document).ready(function(){
-            $(window).blur(function(){
-                    $.ajax({
-                        type: "GET",
-                        url: "{% url 'save_game' result %}"
-                        })
-                    })
-                })
-        </script>
-{% endblock %}
 {% block content %}
 Twój aktualny wynik: {{result}}<br/>
 Aktualny wyraz:<div class="letters"> 

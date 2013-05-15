@@ -44,11 +44,15 @@
             <a href = '{% url 'add' %}'> Dodaj słowa</a></span>
             {% endif %}
        <span class="menu_icon">
-            <a href = '{% url 'play' %}'> Graj</a></span>{% endblock %}
+           <a href = '{% url 'play' %}'> Graj</a></span>
+       <span class="menu_icon">
+           <a href = '{% url 'guess' %}'> Zgadnij słowo</a></span>
        {% if request.user.is_authenticated %}
             <span class="menu_icon">
-            <a href = '{% url 'account_settings' request.user.username %}'> Ustawienia konta</a></span>
-       {% endif %}
+            <a href = '{% url 'account_settings' request.user.username %}'> 
+            Ustawienia konta</a></span>
+       {% endif %}{% endblock %}
+
 </div>
     <div id="container">
         <div id="content">{% block content %} {% endblock %}</div>

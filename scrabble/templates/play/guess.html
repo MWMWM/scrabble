@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+Twój aktualny wynik: {{result}}/{{guesses}}<br/>
+Aktualny wyraz:<div class="letters"> 
+    {% for letter in temp_letters %}
+    <a href="{{request.path}}/{{letter}}">
+    <img src="/media/{{letter}}.jpg" alt="{{letter}}"></a>{% endfor %}</div>
+Pozostałe literki:<div class="letters"> {% for letter in left_letters %}
+    <a href="{{request.path}}{{letter}}">
+    <img src="/media/{{letter}}.jpg" alt="{{letter}}"></a>{% endfor %}</div>
+{% endblock %}
+
