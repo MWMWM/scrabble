@@ -42,15 +42,14 @@
         {% if request.user.is_authenticated %}
             <span class="menu_icon">
             <a href = '{% url 'add' %}'> Dodaj słowa</a></span>
-            {% endif %}
        <span class="menu_icon">
            <a href = '{% url 'play' %}'> Graj</a></span>
-       <span class="menu_icon">
+        {% endif %}       <span class="menu_icon">
            <a href = '{% url 'guess' %}'> Zgadnij słowo</a></span>
        {% if request.user.is_authenticated %}
             <span class="menu_icon">
             <a href = '{% url 'account_settings' request.user.username %}'> 
-            Ustawienia konta</a></span>
+            Zmień hasło</a></span>
        {% endif %}{% endblock %}
 
 </div>

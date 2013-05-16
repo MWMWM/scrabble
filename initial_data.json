@@ -1,5 +1,4 @@
 [
-
 {
     "pk": 1, 
     "model": "auth.user", 
@@ -20,6 +19,21 @@
         "is_staff": false, 
         "password": "pbkdf2_sha256$10000$8PnA7YsNkrpq$Mu4z5zMGKOTYCV2TWb0GMNmm0FKyRtdPEX43Bd60ctk=", 
         "email": ""
+    }
+},
+{
+    "pk": 1, 
+    "model": "scrabble.userprofile", 
+    "fields": {
+        "user": 1, 
+        "best_score": true, 
+    }
+},
+{
+    "pk": 2, 
+    "model": "scrabble.userprofile", 
+    "fields": {
+        "user": [2], 
     }
 },
 {
@@ -57,8 +71,8 @@
     "pk": 2, 
     "model": "scrabble.word", 
     "fields": {
-        "code": "dostanie", 
-        "word": "adeinost", 
+        "code": "adeinost", 
+        "word": "dostanie", 
         "added_by": [
             2, 
             1

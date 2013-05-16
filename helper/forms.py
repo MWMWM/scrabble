@@ -8,12 +8,14 @@ class AddForm(forms.Form):
     words = forms.CharField(max_length=200, required=False,
             label="słowo/a", help_text="podaj oddzielane przecinkami")
     wordsfile = forms.FileField(required=False,
-            label="plik tekstowy ze słowami, które chcesz dodać") 
+            label="słowa z pliku",
+            help_text="w formacie .txt") 
 
 class FindForm(forms.Form):
     lookup_options = ((1, 'moich',), (2, 'wszystkich',), 
             (3, 'pozwól mi wybrać osoby',))
-    letters = forms.CharField(max_length=10, label=" z literek")
+    letters = forms.CharField(max_length=10, label=" z literek",
+            help_text="możesz użyć blanka - zastąp go znakiem: *")
     how = forms.ChoiceField(choices=lookup_options, label="z danych")
     where = forms.ModelMultipleChoiceField(
             queryset=User.objects.all(),

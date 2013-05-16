@@ -2,7 +2,7 @@
 
 {% block content %}
     <form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
-        Dodaj <br/>
+        Dodaj<br/>
         {{ form.as_ul }}
         <input type="submit" name = "add" value = "Dodaj"/><br/><br/>
         </form>

@@ -132,6 +132,7 @@ INSTALLED_APPS = (
     'log',
     'helper',
     'play',
+    'south',
 )
 
 AUTH_PROFILE_MODULE = 'play.UserProfile'

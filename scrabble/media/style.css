@@ -60,4 +60,6 @@ a:link, a:visited {
 #container #content #where label{
     display:none;
 }
-
+.helptext{
+    font-size: 12px;
+}

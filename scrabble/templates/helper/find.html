@@ -5,7 +5,8 @@
     Szukaj słowa<br/>
     {% for field in form %}<div id="{{field.name}}">
         {{ field.errors }}
-        {{ field.label_tag}} {{ field }}
+        {{ field.label_tag}} {{ field }}<br/>
+        <span class="helptext">{{field.help_text}}</span>
         </div>{% endfor %}
     <input type="submit" name="find" value="Szukaj"/><br/><br/> 
 </form>
