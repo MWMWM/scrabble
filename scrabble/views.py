@@ -24,7 +24,7 @@ def Home(request):
     if words_number ==1:
         messages.info(request, 'W bazie jest obecnie ' + str(words_number) + \
                 ' słowo')
-    elif 1 < words_number % 10 < 5:
+    elif 1 < words_number % 10 < 5 and words_number < 1000:
         messages.info(request, 'W bazie są obecnie ' + str(words_number) + \
                 ' słowa')
     else:

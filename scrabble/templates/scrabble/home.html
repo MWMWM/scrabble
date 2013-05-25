@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
+użytkownik | najlepszy wynik <br/> 
 {% for user in users %}
-{{user.username}} {{user.userprofile.best_score}} <br/>
+{{user.username}} | {{user.userprofile.best_score}} <br/>
 {% endfor %}
 {% endblock %}
 

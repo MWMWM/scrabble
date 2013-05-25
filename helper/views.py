@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import string
+import threading
 import itertools, urllib, re
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -13,7 +14,6 @@ from scrabble.views import RenderWithInf
 from helper.forms import AddForm, FindForm
 
 def AddPage(request):
-    added_words = []
     if request.POST:
         form = AddForm(request.POST, request.FILES)
         if not request.user.username:
@@ -23,18 +23,16 @@ def AddPage(request):
             words = form.cleaned_data['words']
             wordsfile = form.cleaned_data['wordsfile']
             if words:
-                added_words.extend(AddWords(request, words))
+                AddWords(request, words)
             if wordsfile:
                 file = request.FILES['wordsfile']
                 if file:
-                    added_words.extend(AddWords(request, 
-                        file.read().decode('utf-8')))
+                    AddWords(request, file.read().decode('utf-8'))
                 else:
                     messages.error(request, 'Nie wybrano pliku do dodania')
     else:
         form = AddForm()
-    return RenderWithInf('helper/add.html', request, {'form': form, 
-        'added_words': added_words})
+    return RenderWithInf('helper/add.html', request, {'form': form})
 
 def FindPage(request, word=''):
     existing_words = []
@@ -93,21 +91,18 @@ def AddWord(request, word, where):
     return HttpResponseRedirect(where)
 
 def AddWords(request, text):
-    added_words = []
     language = request.session.get('language', 'pl')
     language = Language.objects.get(short = language)
+    t = threading.Thread(target=AddWordsT, kwargs={'language': language, 
+        'text':text, 'user': request.user})
+    t.setDaemon(True)
+    t.start()
+    return True
+
+def AddWordsT(language, text, user):
     for word in re.split('[\s,?!;:()-]', text):
         if re.search('[."\']', word) == None:
-            if AddOne(word, language, request.user):
-                added_words.append(word)
-    how_many = len(added_words)
-    if how_many == 1:
-        messages.info(request, 'Dodano słowo')
-    elif 1 < how_many % 10 < 5:
-        messages.info(request, 'Dodano ' + str(how_many) + ' słowa')
-    else:
-        messages.info(request, 'Dodano ' + str(how_many) + ' słów')
-    return added_words
+            AddOne(word, language, user)
 
 def Delete(request, word, where):
     language = request.session.get('language', 'pl')
