@@ -16,7 +16,7 @@ def StartPlay(request):
     player = UserProfile.objects.get(user = request.user)
     language = request.session.get('language', 'pl')
     language = Language.objects.get(short=language)
-    player.last_all_letters = "".join(NewLetter(language) for i in range(8))
+    player.last_all_letters = "".join(NewLetter(language, 8))
     player.last_temp_letters = ""
     if player.best_score < player.last_score:
         player.best_score = player.last_score
@@ -42,9 +42,8 @@ def Play(request):
                 player.last_temp_letters = ""
                 player.all_temp_letters = ""
                 return HttpResponseRedirect(reverse('start_play'))
-            for letter in player.last_temp_letters:
-                player.last_all_letters = player.last_all_letters.replace(
-                        letter, NewLetter(language),1)
+            left_letters = list((Counter(player.last_all_letters) - Counter(player.last_temp_letters)).elements()) + \
+                    NewLetter(language, len(player.last_all_letters)-len(player.last_temp_letters))
             player.last_score += w[0].points
             player.last_temp_letters = ''
     player.save()
@@ -68,14 +67,20 @@ def ChangeLetters(request):
     player = UserProfile.objects.get(user = request.user)
     language = request.session.get('lang', 'pl')
     language = Language.objects.get(short=language)
-    if Word.objects.filter(code = Code(player.last_all_letters), language = language).exists():
-        if player.last_result > 10:
-            player.last_result -= 10
-            messages.info(request, 'Można było ułożyć słowo ze wszystkich literek')
+    for_regex = r'?'.join(Code(player.last_all_letters))
+    for_regex = r'^' + for_regex + '?$'
+    words_poss = Word.objects.filter(code__regex=for_regex, language=language)
+    if words_poss:
+        words = '>, <'.join(w.word for w in words_poss)
+        if player.last_score > 10:
+            player.last_score -= 10
+            messages.info(request, u'Można było ułożyć słowo <{}> i dlatego \
+                    odjęto Ci 10 punktów'.format(words))
         else:
-            messages.info(request, 'Koniec gry - uzyskano ujemną liczbę punktów')
-            return HttpResponseRedirect(reverse('play'))
-    player.last_all_letters = "".join(NewLetter(language) for i in range(8))
+            messages.info(request, u'Można było ułożyć słowo <{}>, masz zbyt\
+                    mało punktów, by kontynuować grę'.format(words))
+            return HttpResponseRedirect(reverse('start_play'))
+    player.last_all_letters = "".join(NewLetter(language, 8))
     player.last_temp_letters = ""
     player.save()
     return  HttpResponseRedirect(reverse('play'))
@@ -104,6 +109,5 @@ def Guess(request, result=0, guesses=0, all_letters='', temp_letters=''):
     return RenderWithInf('play/guess.html', request, {'result': result, 
         'guesses': guesses, 'temp_letters': temp_letters, 'left_letters': left_letters})
 
-def NewLetter(language):
-    return random.choice(language.letters)
-
+def NewLetter(language, how_many=1):
+    return random.sample(language.letters, how_many)
