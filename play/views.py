@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from scrabble.models import Word, User, Language, UserProfile, NewLetters
 from scrabble.views import RenderWithInf
-from helper.views import Code, AddWord
+from helper.views import Code, AddWord, CheckSubwords
 
 def StartPlay(request):
     player = UserProfile.objects.get(user = request.user)
@@ -53,12 +53,6 @@ def DeleteLetter(request, letter):
     player.last_temp_letters = player.last_temp_letters.replace(letter, '', 1)
     player.save()
     return HttpResponseRedirect(reverse('play'))
-
-def CheckSubwords(word, language):
-    for_regex = r'?'.join(Code(word))
-    for_regex = r'^' + for_regex + '?$'
-    words = Word.objects.filter(code__regex=for_regex, language=language)
-    return words  
 
 def ChangeLetters(request):
     player = UserProfile.objects.get(user = request.user)

@@ -35,46 +35,32 @@ def AddPage(request):
     return RenderWithInf('helper/add.html', request, {'form': form})
 
 def FindPage(request, word=''):
-    existing_words = []
+    existing_words = set()
     if request.POST:
         form = FindForm(request.POST)
         if form.is_valid():
             word = form.cleaned_data['letters']
             language = request.session.get('language', 'pl')
             language = Language.objects.get(short = language)
+            if '*' in word:
+                for letter in language.letters:
+                    existing_words.update(CheckSubwords(Code(word.replace('*', letter)),
+                        language))
+            else:
+                existing_words = CheckSubwords(Code(word), language)
             if form.cleaned_data['how'] == '3':
                 where = form.cleaned_data['where']
-                if '*' in word:
-                    for letter in language.letters:
-                        existing_words.extend(Word.objects.filter(
-                            code = Code(word.replace('*', letter)), 
-                            added_by__in = where, language = language))
-                else:
-                    existing_words = Word.objects.filter(code = Code(word), 
-                        added_by__in = where, language = language) 
-            elif form.cleaned_data['how'] == '2':
-                if '*' in word:
-                    for letter in language.letters:
-                        existing_words.extend(Word.objects.filter(
-                            code = Code(word.replace('*', letter)), 
-                            language = language))
-                else:
-                    existing_words = Word.objects.filter(code = Code(word), 
-                    language = language) 
+                existing_words = [word for word in existing_words if 
+                        word.added_by.filter(userprofile__in=where)]
             elif form.cleaned_data['how'] == '1':
                 if not request.user.username:
+                    existing_words = []
                     messages.error(request, 'Aby skorzystać z tej opcji \
                             musisz być zalogowany')
                 else:
                     where = User.objects.get(username = request.user)
-                    if '*' in word:
-                        for letter in language.letters:
-                            existing_words.extend(Word.objects.filter(
-                                code = Code(word.replace('*', letter)), 
-                                added_by = where, language = language))
-                    else:
-                        existing_words = Word.objects.filter(code = Code(word), 
-                            added_by = where, language = language) 
+                    existing_words = [word for word in existing_words if 
+                            word.added_by.filter(userprofile__exact=where)]
     else:
         form = FindForm()
     return RenderWithInf('helper/find.html', request, {
@@ -128,6 +114,12 @@ def AddOne(word, language, added_by):
             word.added_by.add(added_by)
             return 1
     return 0
+
+def CheckSubwords(word, language):
+    for_regex = r'?'.join(Code(word))
+    for_regex = r'^' + for_regex + '?$'
+    words = Word.objects.filter(code__regex=for_regex, language=language)
+    return words
 
 def Code(word):
     return ''.join(sorted(word[:]))
