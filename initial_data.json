@@ -3,7 +3,7 @@
     "pk": 1, 
     "model": "auth.user", 
     "fields": {
-        "username": "m", 
+        "username": "Inicjator", 
         "is_superuser": true, 
         "is_staff": true, 
         "password": "pbkdf2_sha256$10000$TlThPe5XHmzx$lgH1PTzdtjt3bs694KhpNvjoPKIhPwYp8P9TGBElZTE=", 
@@ -14,26 +14,11 @@
     "pk": 2, 
     "model": "auth.user", 
     "fields": {
-        "username": "ty", 
-        "is_superuser": false, 
-        "is_staff": false, 
+        "username": "M", 
+        "is_superuser": true, 
+        "is_staff": true, 
         "password": "pbkdf2_sha256$10000$8PnA7YsNkrpq$Mu4z5zMGKOTYCV2TWb0GMNmm0FKyRtdPEX43Bd60ctk=", 
         "email": ""
-    }
-},
-{
-    "pk": 1, 
-    "model": "scrabble.userprofile", 
-    "fields": {
-        "user": 1, 
-        "best_score": true, 
-    }
-},
-{
-    "pk": 2, 
-    "model": "scrabble.userprofile", 
-    "fields": {
-        "user": [2], 
     }
 },
 {
@@ -58,33 +43,6 @@
     "pk": 1, 
     "model": "scrabble.word", 
     "fields": {
-        "code": "chty", 
-        "word": "tych", 
-        "added_by": [
-            2
-        ], 
-        "language": 1, 
-        "points": 4
-    }
-},
-{
-    "pk": 2, 
-    "model": "scrabble.word", 
-    "fields": {
-        "code": "adeinost", 
-        "word": "dostanie", 
-        "added_by": [
-            2, 
-            1
-        ], 
-        "language": 1, 
-        "points": 8
-    }
-},
-{
-    "pk": 3, 
-    "model": "scrabble.word", 
-    "fields": {
         "code": "hwy", 
         "word": "why", 
         "added_by": [
@@ -92,110 +50,6 @@
         ], 
         "language": 2, 
         "points": 3
-    }
-},
-{
-    "pk": 4, 
-    "model": "scrabble.word", 
-    "fields": {
-        "code": "ar", 
-        "word": "ar", 
-        "added_by": [
-            2
-        ], 
-        "language": 1, 
-        "points": 2
-    }
-},
-{
-    "pk": 5, 
-    "model": "scrabble.word", 
-    "fields": {
-        "code": "as", 
-        "word": "as", 
-        "added_by": [
-            2
-        ], 
-        "language": 1, 
-        "points": 2
-    }
-},
-{
-    "pk": 6, 
-    "model": "scrabble.word", 
-    "fields": {
-        "code": "a\u017c", 
-        "word": "a\u017c", 
-        "added_by": [
-            1
-        ], 
-        "language": 1, 
-        "points": 2
-    }
-},
-{
-    "pk": 7, 
-    "model": "scrabble.word", 
-    "fields": {
-        "code": "bo", 
-        "word": "bo", 
-        "added_by": [
-            1
-        ], 
-        "language": 1, 
-        "points": 2
-    }
-},
-{
-    "pk": 8, 
-    "model": "scrabble.word", 
-    "fields": {
-        "code": "by", 
-        "word": "by", 
-        "added_by": [
-            1
-        ], 
-        "language": 1, 
-        "points": 2
-    }
-},
-{
-    "pk": 9, 
-    "model": "scrabble.word", 
-    "fields": {
-        "code": "cedr", 
-        "word": "cder", 
-        "added_by": [
-            2
-        ], 
-        "language": 1, 
-        "points": 4
-    }
-},
-{
-    "pk": 10, 
-    "model": "scrabble.word", 
-    "fields": {
-        "code": "ci", 
-        "word": "ci", 
-        "added_by": [
-            1
-        ], 
-        "language": 1, 
-        "points": 2
-    }
-},
-{
-    "pk": 11, 
-    "model": "scrabble.word", 
-    "fields": {
-        "code": "do", 
-        "word": "do", 
-        "added_by": [
-            2
-        ], 
-        "language": 1, 
-        "points": 2
     }
 }
 ]

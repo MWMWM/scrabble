@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import random
 
 class Language(models.Model):
     short = models.CharField(max_length = 2, unique=True)
@@ -27,3 +28,14 @@ class UserProfile(models.Model):
     last_all_letters = models.CharField(max_length=12, default='')
     def __unicode__(self):
         return self.user.username
+    def prepare_for_play(self, language):
+        self.last_all_letters = "".join(NewLetters(language, 8))
+        self.last_temp_letters = ""
+        if self.best_score < self.last_score:
+            self.best_score = self.last_score
+        self.last_score = 0
+        self.save()
+
+def NewLetters(language, how_many=1):
+        return random.sample(language.letters, how_many)
+
