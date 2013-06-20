@@ -1,5 +1,7 @@
 # Django settings for scrabble project.
 import os
+import conf
+
 ROOT_PATH = os.path.dirname(__file__)
 
 DEBUG = True
@@ -13,7 +15,7 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',  # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'data',      # Or path to database file if using sqlite3.
         'USER': 'm',                      # Not used with sqlite3.
         'PASSWORD': 'w',                  # Not used with sqlite3.
@@ -80,7 +82,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = '+q02_btrkob9(!xhio2xcwu5_r164=gv-cj4$92ci)j%#z*n8%'
+SECRET_KEY = conf.SECRET_KEY
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (

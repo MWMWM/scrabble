@@ -4,3 +4,4 @@
 !initial_data.json
 *.txt
 make_initial.py
+conf.py

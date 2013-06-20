@@ -6,7 +6,7 @@ import re
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.contrib import messages
-from scrabble.models import Word, User, Language
+from scrabble.models import Word, User, Language, SetPoints
 from scrabble.views import RenderWithInf
 from helper.forms import AddForm, FindForm
 
@@ -119,6 +119,3 @@ def AddOne(word, language, added_by):
 
 def Code(word):
     return ''.join(sorted(word[:]))
-
-def SetPoints(word):
-    return len(word)
