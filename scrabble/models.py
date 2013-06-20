@@ -3,17 +3,17 @@ from django.contrib.auth.models import User
 import random
 
 class Language(models.Model):
-    short = models.CharField(max_length = 2, unique=True)
-    name = models.CharField(max_length = 20)
-    letters = models.CharField(max_length = 50)
+    short = models.CharField(max_length=2, unique=True)
+    name = models.CharField(max_length=20)
+    letters = models.CharField(max_length=50)
     def __unicode__(self):
         return self.name
 
 class Word(models.Model):
-    code = models.CharField(max_length = 20, db_index=True) 
-    word = models.CharField(max_length = 20)
+    code = models.CharField(max_length=20, db_index=True)
+    word = models.CharField(max_length=20)
     added_by = models.ManyToManyField(User)
-    language = models.ForeignKey(Language) 
+    language = models.ForeignKey(Language)
     points = models.IntegerField()
     class Meta:
         ordering = ('points', 'word')
@@ -38,4 +38,3 @@ class UserProfile(models.Model):
 
 def NewLetters(language, how_many=1):
         return random.sample(language.letters, how_many)
-

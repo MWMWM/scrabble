@@ -9,10 +9,10 @@ class AddForm(forms.Form):
             label="słowo/a", help_text="podaj oddzielane przecinkami")
     wordsfile = forms.FileField(required=False,
             label="słowa z pliku",
-            help_text="w formacie .txt") 
+            help_text="w formacie .txt")
 
 class FindForm(forms.Form):
-    lookup_options = ((1, 'moich',), (2, 'wszystkich',), 
+    lookup_options = ((1, 'moich',), (2, 'wszystkich',),
             (3, 'pozwól mi wybrać osoby',))
     letters = forms.CharField(max_length=10, label=" z literek",
             help_text="możesz użyć blanka - zastąp go znakiem: *")
@@ -24,4 +24,3 @@ class FindForm(forms.Form):
             #widget=forms.CheckboxSelectMultiple,
             required=False
             )
-

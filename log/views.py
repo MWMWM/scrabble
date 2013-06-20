@@ -16,7 +16,7 @@ def Login(request, where):
         if form.is_valid():
             name = form.cleaned_data['name']
             password = form.cleaned_data['password']
-            person = authenticate(username = name, password = password)
+            person = authenticate(username=name, password=password)
             if person is not None:
                 login(request, person)
                 where = where.replace('Register/', '')
@@ -31,13 +31,13 @@ def Register(request, where):
         if form.is_valid():
             name = form.cleaned_data['name']
             password = form.cleaned_data['password']
-            if not User.objects.filter(username = name):
-                user = User.objects.create_user(username = name, 
-                        password = password)
-                UserProfile.objects.create(user = user)
+            if not User.objects.filter(username=name):
+                user = User.objects.create_user(username=name,
+                        password=password)
+                UserProfile.objects.create(user=user)
             else:
                 messages.error(request, 'konto o takim loginie już istnieje')
-            person = authenticate(username = name, password = password)
+            person = authenticate(username=name, password=password)
             if person is not None:
                 login(request, person)
                 return HttpResponseRedirect(where)
@@ -54,12 +54,12 @@ def AccountSettings(request, username):
         if request.POST:
             form = AccountForm(user=request.user, data=request.POST)
             if form.is_valid():
-                user = User.objects.get(username = username)
+                user = User.objects.get(username=username)
                 user.set_password(form.cleaned_data['password'])
                 user.save()
                 messages.info(request, "Twoje hasło zostało zmienione")
         else:
-            form = AccountForm(user = request.user)
+            form = AccountForm(user=request.user)
     else:
         messages.error(request, "Nie masz prawa edytować tamtej strony")
         return HttpResponseRedirect(reverse('home'))
