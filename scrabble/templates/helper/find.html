@@ -11,8 +11,14 @@
     <input type="submit" name="find" value="Szukaj"/><br/><br/> 
 </form>
 
-{% if words %} Możesz ułożyć takie słowa, jak:
-    <ul>{% for temp_word in words %}
+{% if words %} Możesz ułożyć słowa:
+<ul>{% for temp_word in words %}
+        {% ifchanged temp_word.points %}
+        za {{ temp_word.points}} 
+            {% if temp_word.points > 4 %}punktów:
+            {% else %} punkty:
+            {% endif %}
+            {% endifchanged %}
         <li><b>{{ temp_word }}</b>, które zostało dodane przez 
         {% for name in temp_word.added_by.all %}
             <b> {{ name }}</b>{% if forloop.last %}. {% else %}, {% endif %}
@@ -20,7 +26,7 @@
             <a href = "{% url 'delete_word' temp_word request.path %}">
                 usuń to słowo z bazy </a></li>
         {% endfor %}</ul>
-    {% else %} 
+{% else %} 
     {% if word %} Nie możesz ułożyć żadnego słowa ze wszystkich literek. {% endif %}
     {% endif %}
     {% endblock %}

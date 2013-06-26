@@ -63,3 +63,5 @@ a:link, a:visited {
 .helptext{
     font-size: 12px;
 }
+tbody tr:nth-child(even) td {background: #10367f;}
+tbody tr:nth-child(odd) td {background: #1e6be9;}

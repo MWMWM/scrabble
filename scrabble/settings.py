@@ -134,6 +134,7 @@ INSTALLED_APPS = (
     'log',
     'helper',
     'play',
+    'south',
 
 )
 
