@@ -5,9 +5,9 @@ import threading
 import re
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
+from django.template import RequestContext
 from django.contrib import messages
 from scrabble.models import Word, User, Language, SetPoints
-from scrabble.views import RenderWithInf
 from helper.forms import AddForm, FindForm
 
 def AddPage(request):
@@ -29,39 +29,44 @@ def AddPage(request):
                     messages.error(request, 'Nie wybrano pliku do dodania')
     else:
         form = AddForm()
-    return RenderWithInf('helper/add.html', request, {'form': form})
+    return render_to_response('helper/add.html', {'form': form},
+            context_instance=RequestContext(request))
 
 def FindPage(request, word=''):
     if request.POST:
         form = FindForm(request.POST)
         if form.is_valid():
             word = form.cleaned_data['letters']
-            language = request.session.get('language', 'pl')
-            language = Language.objects.get(short=language)
             if form.cleaned_data['how'] == '3':  # z danych wybranych osób
-                where = form.cleaned_data['where']
+                adders = form.cleaned_data['where']
             elif form.cleaned_data['how'] == '2':  # ze wszystkich użytkowników
-                where = User.objects.all()
+                adders = User.objects.all()
             elif form.cleaned_data['how'] == '1':  # z danych użytkownika
                 if not request.user.username:
                     messages.error(request, 'Aby skorzystać z tej opcji \
                             musisz być zalogowany')
+                    adders =[]
                 else:
                     user = User.objects.get(username=request.user)
-                    where = [user, ]
+                    adders = [user, ]
+            language = request.session.get('language', 'pl')
+            language = Language.objects.get(short=language)
+            existing_words = []
             if '*' in word:
-                for_regex = ['^' + r'?'.join(Code(word.replace('*', letter))) \
-                        + '?$' for letter in language.letters]
-                my_regex = '(' + '|'.join(for_regex) + ')'
+                for letter in language.letters:
+                    for adder in adders:
+                        existing_words += Word.objects.filter(
+                                code=Code(word.replace('*', letter)), 
+                                language=language, added_by=adder).order_by('-points')
             else:
-                my_regex = r'^' + r'?'.join(Code(word)) + '?$'
-            existing_words = Word.objects.filter(code__regex=my_regex,
-                    language=language, added_by__in=where).order_by('-points')
+                for adder in adders:
+                    existing_words += Word.objects.filter(code=Code(word),
+                        language=language, added_by=adder).order_by('-points')
     else:
         existing_words = []
         form = FindForm()
-    return RenderWithInf('helper/find.html', request, {
-        'form': form, 'word': word, 'words': existing_words})
+    return render_to_response('helper/find.html', {'form': form, 'word': word, 
+        'words': existing_words}, context_instance=RequestContext(request))
 
 def AddWord(request, word, where):
     if request.user.username:
@@ -90,30 +95,24 @@ def AddWordsT(language, text, user):
 def Delete(request, word, where):
     language = request.session.get('language', 'pl')
     language = Language.objects.get(short=language)
-    word_to_delete = Word.objects.filter(word=word, added_by=request.user,
+    try:
+        word_to_delete = Word.objects.get(word=word, added_by=request.user,
             language=language)
-    if word_to_delete:
-        word_to_delete = word_to_delete[0]
-        if word_to_delete.added_by.count() > 1:
-            word_to_delete.added_by.remove(request.user)
-        else:
-            word_to_delete.delete()
-    else:
+        word_to_delete.delete()
+    except IndexError:
         messages.error(request, 'Nie możesz usunąć słowa, \
                 które nie należy do Ciebie')
     return HttpResponseRedirect(where)
 
 def CheckSubwords(word, language):
-    for_regex = '^' + r'?'.join(Code(word)) + '?$'
-    words = Word.objects.filter(code__regex=for_regex, language=language)
+    words = Word.objects.filter(code=Code(word), language=language)
     return words
 
 def AddOne(word, language, added_by):
     if word == word.lower() and 1 < len(word) < 9:
-        word, created = Word.objects.get_or_create(code=Code(word),
-                word=word, language=language,  points=SetPoints(word))
-        if not Word.objects.filter(word=word, added_by=added_by).exists():
-            word.added_by.add(added_by)
+        if not Word.objects.filter(word=word, language=language, added_by=added_by).exists():
+            Word.objects.create(code=Code(word), word=word, language=language,  
+                    points=SetPoints(word), added_by=added_by)
             return 1
     return 0
 

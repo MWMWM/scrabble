@@ -1,16 +1,9 @@
 from django.conf.urls import patterns, include, url
-from django.conf import settings
-from django.contrib import admin
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
-admin.autodiscover()
+handler500 = 'djangotoolbox.errorviews.server_error'
 
-urlpatterns = patterns('',
-        url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
-            'document_root': settings.MEDIA_ROOT}),
-        url(r'^admin/', include(admin.site.urls)),
-        )
-
-urlpatterns += patterns('scrabble.views',
+urlpatterns = patterns('scrabble.views',
         url(r'^$', 'Home', name='home'),
         url(r'^Lang/(?P<lang>\w\w)$', 'ChangeLang', name='change_lang'),
         )
@@ -35,6 +28,7 @@ urlpatterns += patterns('helper.views',
 urlpatterns += patterns('play.views',
         url(r'^start_play/$', 'StartPlay', name='start_play'),
         url(r'^play/$', 'Play', name='play'),
+        url(r'^check$', 'Check', name='check'),
         url(r'letter_plus/(?P<letter>\w)$', 'AddLetter', name='letter_plus'),
         url(r'letter_minus/(?P<letter>\w)$', 'DeleteLetter', name='letter_minus'),
         url(r'^changeletters/$', 'ChangeLetters', name='changeletters'),
@@ -46,3 +40,5 @@ urlpatterns += patterns('play.views',
         url(r'^(?P<where>.+)/(?P<temp_letters>\w+)/(?P<letter>\w)$',
             'Delete', name='delete_letter'),
         )
+
+urlpatterns += staticfiles_urlpatterns()

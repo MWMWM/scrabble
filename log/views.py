@@ -6,7 +6,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from scrabble.views import RenderWithInf
+from django.template import RequestContext
+from django.shortcuts import render_to_response
 from scrabble.models import User, UserProfile
 from log.forms import LogForm, RegistrationForm, AccountForm
 
@@ -23,7 +24,8 @@ def Login(request, where):
                 return HttpResponseRedirect(where)
     else:
         form = LogForm()
-    return RenderWithInf('log/login.html', request, {'form': form})
+    return render_to_response('log/login.html', {'form': form},
+            context_instance=RequestContext(request))
 
 def Register(request, where):
     if request.POST:
@@ -43,7 +45,8 @@ def Register(request, where):
                 return HttpResponseRedirect(where)
     else:
         form = RegistrationForm()
-    return RenderWithInf('log/register.html', request, {'form': form})
+    return render_to_response('log/register.html', {'form': form},
+            context_instance=RequestContext(request))
 
 def Logout(request, where):
     logout(request)
@@ -63,4 +66,5 @@ def AccountSettings(request, username):
     else:
         messages.error(request, "Nie masz prawa edytować tamtej strony")
         return HttpResponseRedirect(reverse('home'))
-    return RenderWithInf('log/account_settings.html', request, {'form': form})
+    return render_to_response('log/account_settings.html', {'form': form},
+            context_instance=RequestContext(request))

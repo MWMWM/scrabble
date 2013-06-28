@@ -1,19 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from scrabble.models import Word, Language, User
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseRedirect
-from django.utils import simplejson
+from django.http import HttpResponse
+from scrabble.models import Word, Language, User
 
-def RenderWithInf(template, request, args={}):
-    args['user'] = request.user.username
-    args['lang'] = request.session.get('language', 'pl')
-    args['languages'] = Language.objects.all()
-    return render_to_response(template, args,
-            context_instance=RequestContext(request))
+def MyContextProcessor(request):
+    return {'user':request.user, 
+            'lang': request.session.get('language', 'pl'),
+            'languages': Language.objects.all()}
 
 def ChangeLang(request, lang):
     request.session['language'] = lang
@@ -31,4 +28,5 @@ def Home(request):
         messages.info(request, 'W bazie jest obecnie ' + str(words_number) + \
                 ' słów')
     users = User.objects.all()
-    return RenderWithInf('scrabble/home.html', request, {'users': users})
+    return render_to_response('scrabble/home.html', {'users': users},
+            context_instance=RequestContext(request))

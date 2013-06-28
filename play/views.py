@@ -6,43 +6,56 @@ from collections import Counter
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.contrib.auth import authenticate, login, logout
+from django.template import RequestContext
 from django.contrib import messages
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ObjectDoesNotExist
 from scrabble.models import Word, User, Language, UserProfile, NewLetters
-from scrabble.views import RenderWithInf
 from helper.views import Code, AddWord, CheckSubwords
+
+
+def Play(request):
+    player = UserProfile.objects.get(user=request.user)
+    messages.info(request, 'user {}, <br/> temp_lett {}, \n best_score {}, \n all_lett {}\
+            '.format(player.user, player.last_temp_letters, player.best_score, player.last_all_letters))
+    language = request.session.get('language', 'pl')
+    language = Language.objects.get(short=language)
+    if not player.last_all_letters:
+        player.prepare_for_play(language)    
+    left_letters = list((Counter(player.last_all_letters) - Counter(
+            player.last_temp_letters)).elements())
+    if not Word.objects.filter(word=player.last_temp_letters, language=language).exists():
+        to_add = True
+    else:
+        to_add = False            
+    return render_to_response('play/main.html', {'left_letters': left_letters,
+        'to_add': to_add}, context_instance=RequestContext(request))
 
 def StartPlay(request):
     player = UserProfile.objects.get(user=request.user)
     language = request.session.get('language', 'pl')
     language = Language.objects.get(short=language)
     player.prepare_for_play(language)
-    return RenderWithInf('play/main.html', request, {
-        'left_letters': player.last_all_letters, 'player': player})
+    return HttpResponseRedirect(reverse('play'))
 
-def Play(request):
-    player = UserProfile.objects.get(user=request.user)
-    language = request.session.get('language', 'pl')
-    language = Language.objects.get(short=language)
-    left_letters = list((Counter(player.last_all_letters) - Counter(
-            player.last_temp_letters)).elements())
-    if not Word.objects.filter(word=player.last_temp_letters,
-            language=language).exists():
-        to_add = True
-        if 'check' in request.POST:
-            messages.error(request, "Tego słowa nie ma przecież w słowniku")
-    else:
-        to_add = False
-        if 'check' in request.POST:
-            w = Word.objects.filter(word=player.last_temp_letters,
-                    language=language)
-            player.last_score += w[0].points
-            left_letters += NewLetters(language, len(player.last_temp_letters))
-            player.last_temp_letters = ''
-            player.last_all_letters = ''.join(left_letters)
-            player.save()
-    return RenderWithInf('play/main.html', request, {
-        'left_letters': left_letters, 'to_add': to_add, 'player': player})
+def Check(request):
+    try:
+        player = UserProfile.objects.get(user=request.user)
+        language = request.session.get('language', 'pl')
+        language = Language.objects.get(short=language)
+        w = Word.objects.get(word=player.last_temp_letters, language=language)
+        player.last_score += w.points
+        left_letters += NewLetters(language, len(player.last_temp_letters))
+        player.last_temp_letters = ''
+        player.last_all_letters = ''.join(left_letters)
+        player.save()
+    except ObjectDoesNotExist:
+        messages.error(request, "Tego słowa nie ma przecież w słowniku")
+    player.best_score += 1
+    player.save()
+    return render_to_response('play/main.html', 
+            {'left_letters': player.last_all_letters},
+            context_instance=RequestContext(request))
 
 def AddLetter(request, letter):
     player = UserProfile.objects.get(user=request.user)
@@ -99,6 +112,6 @@ def Guess(request, result=0, guesses=0, all_letters='', temp_letters=''):
         all_letters = random.choice(Word.objects.filter(language=language))
         return HttpResponseRedirect(reverse('guessed', kwargs={
             'result': result, 'guesses': guesses, 'all_letters': all_letters}))
-    return RenderWithInf('play/guess.html', request, {'result': result,
+    return render_to_response('play/guess.html', {'result': result,
         'guesses': guesses, 'temp_letters': temp_letters,
-        'left_letters': left_letters})
+        'left_letters': left_letters}, context_instance=RequestContext(request))

@@ -17,7 +17,7 @@
             {% endif %}
         {% for word in added_words %}
             <li>{{word}}
-            <a href = "{% url 'delete_word' word request.path%}">
+            <a href = "{% url delete_word word request.path%}">
                 usuń to słowo z bazy </a>
             {% if forloop.last %}. {% else %}, {% endif %}</li>
             {% endfor %}

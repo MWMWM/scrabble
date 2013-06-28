@@ -13,7 +13,7 @@ class Language(models.Model):
 class Word(models.Model):
     code = models.CharField(max_length=20, db_index=True)
     word = models.CharField(max_length=20)
-    added_by = models.ManyToManyField(User)
+    added_by = models.ForeignKey(User)
     language = models.ForeignKey(Language)
     points = models.IntegerField()
     class Meta:
@@ -40,12 +40,13 @@ class UserProfile(models.Model):
 def NewLetters(language, how_many=1):
         return random.sample(language.letters, how_many)
 
-points_table = {'a':1, 'ą':5, 'b':3, 'c':2, 'ć':6, 'd':2, 'e':1, 'ę':5, 'f':5,
-'g':3, 'h':3, 'i':1, 'j':3, 'k':2, 'l':2, 'ł':3, 'm':2, 'n':1, 'ń':7, 'o':1,
-'ó':5, 'p':2, 'q':2, 'r':1, 's':1, 'ś':5, 't':2, 'u':3, 'v':2, 'w':1, 'x':3,
-'y':2, 'z':1, 'ź':9, 'ż':5}
+points_table = {'a':1, u'ą':5, 'b':3, 'c':2, u'ć':6, 'd':2, 'e':1, u'ę':5, 'f':5,
+'g':3, 'h':3, 'i':1, 'j':3, 'k':2, 'l':2, u'ł':3, 'm':2, 'n':1, u'ń':7, 'o':1,
+u'ó':5, 'p':2, 'q':2, 'r':1, 's':1, u'ś':5, 't':2, 'u':3, 'v':2, 'w':1, 'x':3,
+'y':2, 'z':1, u'ź':9, u'ż':5}
 
 def SetPoints(word):
+    points = 0
     for i in word:
         points += points_table[i]
     return points
