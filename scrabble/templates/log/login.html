@@ -2,10 +2,17 @@
 {% block loginout %}{% endblock %}
 
 {% block content %}
- <form action="" method="POST">{% csrf_token %}
-    Zaloguj się<br/>
-        {{ form.as_ul }}
-        <input type="submit" name = "log" value = "Zaloguj"/><br/><br/>
-    </form>
-{% endblock %}
- 
+  <form action="" method="POST">{% csrf_token %}
+      <div class="login-form">
+        {% for field in form %}
+          <div class="control-group">
+            {{ field.errors }}
+            {{ field.label_tag}}
+            {{field.help_text}}
+            {{ field }}
+          </div>
+        {% endfor %}
+        <input type="submit" name = "log" value = "Zaloguj"/>
+    </div>
+  </form>
+{% endblock %} 

@@ -1,12 +1,37 @@
 {% extends "base.html" %}
 {% block content %}
-Twój aktualny wynik: {{result}}/{{guesses}}<br/>
-Aktualny wyraz:<div class="letters"> 
+<div class="row">
+  <div class="span2">
+      Aktualny wyraz:
+  </div>
+  <div class="span5">
     {% for letter in temp_letters %}
-    <a href="{{request.path}}/{{letter}}">
-    <img src="/media/{{letter}}.jpg" alt="{{letter}}"></a>{% endfor %}</div>
-Pozostałe literki:<div class="letters"> {% for letter in left_letters %}
-    <a href="{{request.path}}{{letter}}">
-    <img src="/media/{{letter}}.jpg" alt="{{letter}}"></a>{% endfor %}</div>
+      <a href="{{request.path}}/{{letter}}">
+        <img src="{{STATIC_URL}}letters/{{letter}}.jpg" alt="{{letter}}">
+      </a>
+    {% endfor %}
+  </div>
+</div>
+<div class="row">
+  <div class="span2">
+    Pozostałe literki:
+  </div>
+  <div class="span5">
+    {% for letter in left_letters %}
+      <a href="{{request.path}}{{letter}}">
+        <img src="{{STATIC_URL}}letters/{{letter}}.jpg" alt="{{letter}}">
+      </a>
+      {% endfor %}
+  </div>
+</div>
+<div class="row">
+  <div class="span2">
+    Aktualny wynik:
+  </div>
+  <div class="span4">
+    {{result}}/{{guesses}}
+  </div>
+</div>
+<br/>
 {% endblock %}
 

@@ -26,23 +26,26 @@ def Play(request):
     language = Language.objects.get(short=language)
     left_letters = list((Counter(player.last_all_letters) - Counter(
             player.last_temp_letters)).elements())
+    return RenderWithInf('play/main.html', request, {
+        'left_letters': left_letters, 'player': player})
+
+def Check(request):
+    player = UserProfile.objects.get(user=request.user)
+    language = request.session.get('language', 'pl')
+    language = Language.objects.get(short=language)
+    left_letters = list((Counter(player.last_all_letters) - Counter(
+            player.last_temp_letters)).elements())
     if not Word.objects.filter(word=player.last_temp_letters,
             language=language).exists():
-        to_add = True
-        if 'check' in request.POST:
-            messages.error(request, "Tego słowa nie ma przecież w słowniku")
-    else:
-        to_add = False
-        if 'check' in request.POST:
-            w = Word.objects.filter(word=player.last_temp_letters,
-                    language=language)
-            player.last_score += w[0].points
-            left_letters += NewLetters(language, len(player.last_temp_letters))
-            player.last_temp_letters = ''
-            player.last_all_letters = ''.join(left_letters)
-            player.save()
-    return RenderWithInf('play/main.html', request, {
-        'left_letters': left_letters, 'to_add': to_add, 'player': player})
+       return RenderWithInf('play/main.html', request, {'not_existing': True,
+           'left_letters': left_letters, 'player': player})
+    w = Word.objects.filter(word=player.last_temp_letters, language=language)
+    player.last_score += w[0].points
+    left_letters += NewLetters(language, len(player.last_temp_letters))
+    player.last_all_letters = ''.join(left_letters)
+    player.last_temp_letters = ''
+    player.save()
+    return  HttpResponseRedirect(reverse('play'))
 
 def AddLetter(request, letter):
     player = UserProfile.objects.get(user=request.user)

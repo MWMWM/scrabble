@@ -2,12 +2,18 @@
 {% block loginout %}{% endblock %}
 
 {% block content %}
- <form action="" method="POST">{% csrf_token %}
-        Zarejestruj się<br/>
-        {{ form.as_ul }}
+  <form action="" method="POST">{% csrf_token %}
+      <div class="login-form">
+        {% for field in form %}
+          <div class="control-group">
+            {{ field.errors }}
+            {{ field.label_tag}}
+            {{field.help_text}}
+            {{ field }}
+          </div>
+        {% endfor %}
         <input type="submit" name = "addlog" value = "Utwórz konto i zaloguj"/>
-        <br/><br/>
-        <a href='{% url 'login' request.path %}'> Zaloguj się </a>
-    </form>
+    </div>
+  </form>
+
 {% endblock %}
- 

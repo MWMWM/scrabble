@@ -1,36 +1,45 @@
 {% extends "base.html" %}
 
 {% block content %}
-<form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
-    Szukaj słowa<br/>
-    {% for field in form %}<div id="{{field.name}}">
+  <div class="todo-search">
+    <form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
+      Szukaj słowa<br/>
+      {% for field in form %}
         {{ field.errors }}
-        {{ field.label_tag}} {{ field }}<br/>
-        <span class="helptext">{{field.help_text}}</span>
-        </div>{% endfor %}
-    <input type="submit" name="find" value="Szukaj"/><br/><br/> 
-</form>
-
-{% if words %} Możesz ułożyć słowa:
-<ul>{% for temp_word in words %}
+        {{ field.label_tag}}
+        {{field.help_text}}
+        {{ field }}
+      {% endfor %}
+      <input type="submit" name="find" value="Szukaj"/><br/>
+    </form>
+  </div>
+  {% if words %} Możesz ułożyć słowa:
+    <ul>
+      {% for temp_word in words %}
         {% ifchanged temp_word.points %}
-        za {{ temp_word.points}} 
+          za {{ temp_word.points}} 
             {% if temp_word.points > 4 %}punktów:
             {% else %} punkty:
             {% endif %}
-            {% endifchanged %}
+        {% endifchanged %}
         <li><b>{{ temp_word }}</b>, które zostało dodane przez 
-        {% for name in temp_word.added_by.all %}
+          {% for name in temp_word.added_by.all %}
             <b> {{ name }}</b>{% if forloop.last %}. {% else %}, {% endif %}
-            {% endfor %}
-            <a href = "{% url 'delete_word' temp_word request.path %}">
-                usuń to słowo z bazy </a></li>
-        {% endfor %}</ul>
-{% else %} 
-    {% if word %} Nie możesz ułożyć żadnego słowa ze wszystkich literek. {% endif %}
+          {% endfor %}
+          <a href = "{% url 'delete_word' temp_word request.path %}">
+              usuń to słowo z bazy 
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %} 
+    {% if word %} 
+    Nie możesz ułożyć żadnego słowa ze wszystkich literek. 
     {% endif %}
-    {% endblock %}
+  {% endif %}
+{% endblock %}
 {% block for_js %}
-<script src="/media/find_form.js" type='text/javascript'>
-</script>{% endblock %}
+  <script src="{{STATIC_URL}}find_form.js" type='text/javascript'>
+  </script>
+{% endblock %}
 

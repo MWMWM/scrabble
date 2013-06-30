@@ -32,6 +32,7 @@ def AddPage(request):
     return RenderWithInf('helper/add.html', request, {'form': form})
 
 def FindPage(request, word=''):
+    existing_words = []
     if request.POST:
         form = FindForm(request.POST)
         if form.is_valid():
@@ -46,6 +47,7 @@ def FindPage(request, word=''):
                 if not request.user.username:
                     messages.error(request, 'Aby skorzystać z tej opcji \
                             musisz być zalogowany')
+                    where = []
                 else:
                     user = User.objects.get(username=request.user)
                     where = [user, ]
@@ -58,7 +60,6 @@ def FindPage(request, word=''):
             existing_words = Word.objects.filter(code__regex=my_regex,
                     language=language, added_by__in=where).order_by('-points')
     else:
-        existing_words = []
         form = FindForm()
     return RenderWithInf('helper/find.html', request, {
         'form': form, 'word': word, 'words': existing_words})

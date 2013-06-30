@@ -1,22 +1,69 @@
 {% extends "base.html" %}
 {% block content %}
-<a href="{% url 'start_play' %}"> Nowa gra </a></br>
-Twój aktualny wynik: {{player.last_score}}<br/>
-Aktualny wyraz:<div class="letters"> 
+
+<div class="row">
+  <div class="span2">
+      Aktualny wyraz:
+  </div>
+  <div class="span5">
     {% for letter in player.last_temp_letters %}
-    <a href="{% url 'letter_minus' letter %}">
-    <img src="/media/{{letter}}.jpg" alt="{{letter}}"></a>{% endfor %}</div>
-Pozostałe literki:<div class="letters"> {% for letter in left_letters %}
-    <a href="{% url 'letter_plus' letter %}">
-    <img src="/media/{{letter}}.jpg" alt="{{letter}}"></a>{% endfor %}</div>
-<form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
-    <input type="submit" name = "check" value = "submit"/><br/>
-    {% if to_add and player.last_temp_letters%}
+      <a href="{% url 'letter_minus' letter %}">
+        <img src="{{STATIC_URL}}letters/{{letter}}.jpg" alt="{{letter}}">
+      </a>
+    {% endfor %}
+  </div>
+</div>
+<div class="row">
+  <div class="span2">
+    Pozostałe literki:
+  </div>
+  <div class="span5">
+    {% for letter in left_letters %}
+      <a href="{% url 'letter_plus' letter %}">
+        <img src="{{STATIC_URL}}letters/{{letter}}.jpg" alt="{{letter}}">
+      </a>
+      {% endfor %}
+  </div>
+</div>
+<div class="row">
+  <div class="span2">
+    Aktualny wynik:
+  </div>
+  <div class="span5">
+      {{player.last_score}}
+  </div>
+</div>
+<br/>
+<div class="row">
+    <div class="span2">
+      <div class="btn btn-primary btn-large btn-block">
+        <a href='{% url 'check' %}'> 
+          Sprawdź wyraz
+        </a>
+      </div>
+    </div>
+    <div class="span2">
+      <div class="btn btn-primary btn-large btn-block">
+        <a href='{% url 'changeletters' %}'> 
+            Wymień literki 
+        </a> 
+      </div>
+    </div>
+    <div class="span2">
+      <div class="btn btn-primary btn-large btn-block">
+        <a href="{% url 'start_play' %}"> 
+          Nowa gra 
+        </a>
+      </div>
+  </div>
+</div>
+<br/>
+{% if not_existing %}
+<div class="row">
         słowa "{{player.last_temp_letters}}" nie ma w słowniku
         <a href='{% url 'add_word' player.last_temp_letters request.path %}'> 
-        Dodaj je do słownika<br/>
-        {% endif %}<br/>
-    <a href='{% url 'changeletters' %}'> Wymień literki </a><br/>
-</form>
+            Dodaj je do słownika
+        </div>
+  {% endif %}
 {% endblock %}
 

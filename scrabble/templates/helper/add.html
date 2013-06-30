@@ -1,11 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
-        Dodaj<br/>
-        {{ form.as_ul }}
-        <input type="submit" name = "add" value = "Dodaj"/><br/><br/>
-        </form>
+<div class="todo-search">
+  <form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
+       Dodaj<br/>
+      {% for field in form %}
+      <h3>{{ field.errors }}
+          {{ field.label_tag}}
+          {{field.help_text}}
+          {{ field }}</h3>
+      {% endfor %}
+  <input type="submit" name="add" value="Dodaj"/><br/>
+</form>
     {% endblock %}
 {% block informations %}
     {{block.super}}
