@@ -5,10 +5,10 @@ Twój aktualny wynik: {{user.userprofile.last_score}}<br/>
 Aktualny wyraz:<div class="letters"> 
     {% for letter in user.userprofile.last_temp_letters %}
     <a href="{% url letter_minus letter %}">
-        <img src="{{STATIC_URL}}{{letter}}.jpg" alt="{{letter}}"></a>{% endfor %}</div>
+        <img src="{{STATIC_URL}}/letters/{{letter}}.jpg" alt="{{letter}}"></a>{% endfor %}</div>
 Pozostałe literki:<div class="letters"> {% for letter in left_letters %}
     <a href="{% url letter_plus letter %}">
-        <img src="{{STATIC_URL}}{{letter}}.jpg" alt="{{letter}}"></a>{% endfor %}</div>
+        <img src="{{STATIC_URL}}/letters/{{letter}}.jpg" alt="{{letter}}"></a>{% endfor %}</div>
 <a href ="{% url check %}">Sprawdź słowo </a>
     {% if to_add and user.userprofile.last_temp_letters %}
         słowa "{{user.userprofile.last_temp_letters}}" nie ma w słowniku
@@ -16,10 +16,5 @@ Pozostałe literki:<div class="letters"> {% for letter in left_letters %}
         Dodaj je do słownika<br/>
         {% endif %}<br/>
     <a href='{% url changeletters %}'> Wymień literki </a><br/>
-{{user}}
-{{user.userprofile.best_score}}<br/>
-temp {{user.userprofile.last_temp_letters}}<br/>
-all {{user.userprofile.last_all_letters}}<br/>
-left {{left_letters}}<br/>
 {% endblock %}
 

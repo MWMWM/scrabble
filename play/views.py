@@ -10,18 +10,17 @@ from django.template import RequestContext
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
-from scrabble.models import Word, User, Language, UserProfile, NewLetters
+from scrabble.models import Word, UserProfile, Language, UserProfile, NewLetters
 from helper.views import Code, AddWord, CheckSubwords
 
 
 def Play(request):
     player = UserProfile.objects.get(user=request.user)
-    messages.info(request, 'user {}, <br/> temp_lett {}, \n best_score {}, \n all_lett {}\
-            '.format(player.user, player.last_temp_letters, player.best_score, player.last_all_letters))
     language = request.session.get('language', 'pl')
     language = Language.objects.get(short=language)
     if not player.last_all_letters:
-        player.prepare_for_play(language)    
+        player.last_all_letters = "".join(NewLetters(language, 8))
+        player.save()
     left_letters = list((Counter(player.last_all_letters) - Counter(
             player.last_temp_letters)).elements())
     if not Word.objects.filter(word=player.last_temp_letters, language=language).exists():
@@ -105,7 +104,7 @@ def Guess(request, result=0, guesses=0, all_letters='', temp_letters=''):
                 result = int(result) + 1
                 messages.info(request, "Utworzony wyraz był poprawny")
             else:
-                word = Word.objects.filter(word=all_letters, language=language)
+                word = Word.objects.filter(code=Code(all_letters), language=language)
                 messages.info(request, u"Utworzony wyraz nie był poprawny, \
                         można było utworzyć <{}>".format('>, <'.join(
                             w.word for w in word)))

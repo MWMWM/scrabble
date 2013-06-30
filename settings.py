@@ -55,11 +55,17 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'scrabble.views.MyContextProcessor',
 )
 
+DBINDEXER_BACKENDS = (
+    'dbindexer.backends.BaseResolver',
+    'dbindexer.backends.FKNullFix',
+    'dbindexer.backends.InMemoryJOINResolver',
+)
 # This test runner captures stdout and associates tracebacks with their
 # corresponding output. Helps a lot with print-debugging.
 TEST_RUNNER = 'djangotoolbox.test.CapturingTestSuiteRunner'
 
 ADMIN_MEDIA_PREFIX = '/media/admin/'
+
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_DIR, 'templates'),
 )

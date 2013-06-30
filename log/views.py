@@ -36,7 +36,8 @@ def Register(request, where):
             if not User.objects.filter(username=name):
                 user = User.objects.create_user(username=name,
                         password=password)
-                UserProfile.objects.create(user=user)
+                UserProfile.objects.create(user=user, last_temp_letters='a',
+                        last_all_letters='ab', best_score=0, last_score=0)
             else:
                 messages.error(request, 'konto o takim loginie już istnieje')
             person = authenticate(username=name, password=password)

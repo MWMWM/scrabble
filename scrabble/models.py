@@ -25,8 +25,8 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, unique=True, primary_key=True)
     best_score = models.IntegerField(default=0)
     last_score = models.IntegerField(default=0)
-    last_temp_letters = models.CharField(max_length=12, default='')
-    last_all_letters = models.CharField(max_length=12, default='')
+    last_temp_letters = models.CharField(max_length=12)
+    last_all_letters = models.CharField(max_length=12)
     def __unicode__(self):
         return self.user.username
     def prepare_for_play(self, language):
