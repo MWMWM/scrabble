@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+  <div class="span2">
+      Aktualny wyraz:
+  </div>
+  <div class="span5">
+    {% for letter in player.last_temp_letters %}
+      <a href="{% url 'letter_minus' letter %}">
+        <img src="{{STATIC_URL}}letters/{{letter}}.jpg" alt="{{letter}}">
+      </a>
+    {% endfor %}
+  </div>
+</div>
+<div class="row">
+  <div class="span2">
+    Pozostałe literki:
+  </div>
+  <div class="span5">
+    {% for letter in left_letters %}
+      <a href="{% url 'letter_plus' letter %}">
+        <img src="{{STATIC_URL}}letters/{{letter}}.jpg" alt="{{letter}}">
+      </a>
+      {% endfor %}
+  </div>
+</div>
+<div class="row">
+  <div class="span2">
+    Aktualny wynik:
+  </div>
+  <div class="span4">
+    {{player.last_score}}
+  </div>
+</div>
+<br/>
+
+<a href="{% url 'start_play' %}"> Nowa gra </a><br/>
+<a href ="{% url 'check' %}">Sprawdź słowo </a>
+<a href='{% url 'changeletters' %}'> Wymień literki </a><br/>
+
+{% if not_existing %}
+    słowa "{{player.last_temp_letters}}" nie ma w słowniku
+        <a href='{% url 'add_word' player.last_temp_letters request.path %}'> 
+        Dodaj je do słownika<br/>
+{% endif %}<br/>
+{% endblock %}

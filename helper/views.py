@@ -33,6 +33,7 @@ def AddPage(request):
             context_instance=RequestContext(request))
 
 def FindPage(request, word=''):
+    existing_words = []
     if request.POST:
         form = FindForm(request.POST)
         if form.is_valid():
@@ -63,7 +64,6 @@ def FindPage(request, word=''):
                     existing_words += Word.objects.filter(code=Code(word),
                         language=language, added_by=adder).order_by('-points')
     else:
-        existing_words = []
         form = FindForm()
     return render_to_response('helper/find.html', {'form': form, 'word': word, 
         'words': existing_words}, context_instance=RequestContext(request))

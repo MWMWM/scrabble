@@ -10,17 +10,6 @@ class Language(models.Model):
     def __unicode__(self):
         return self.name
 
-class Word(models.Model):
-    code = models.CharField(max_length=20, db_index=True)
-    word = models.CharField(max_length=20)
-    added_by = models.ForeignKey(User)
-    language = models.ForeignKey(Language)
-    points = models.IntegerField()
-    class Meta:
-        ordering = ('points', 'word')
-    def __unicode__(self):
-        return self.word
-
 class UserProfile(models.Model):
     user = models.OneToOneField(User, unique=True, primary_key=True)
     best_score = models.IntegerField(default=0)
@@ -36,6 +25,17 @@ class UserProfile(models.Model):
             self.best_score = self.last_score
         self.last_score = 0
         self.save()
+
+class Word(models.Model):
+    code = models.CharField(max_length=20, db_index=True)
+    word = models.CharField(max_length=20)
+    added_by = models.ManyToManyField(UserProfile)
+    language = models.ForeignKey(Language)
+    points = models.IntegerField()
+    class Meta:
+        ordering = ('points', 'word')
+    def __unicode__(self):
+        return self.word
 
 def NewLetters(language, how_many=1):
         return random.sample(language.letters, how_many)

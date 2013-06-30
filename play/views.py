@@ -10,6 +10,7 @@ from django.template import RequestContext
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import DatabaseError
 from scrabble.models import Word, UserProfile, Language, UserProfile, NewLetters
 from helper.views import Code, AddWord, CheckSubwords
 
@@ -18,17 +19,10 @@ def Play(request):
     player = UserProfile.objects.get(user=request.user)
     language = request.session.get('language', 'pl')
     language = Language.objects.get(short=language)
-    if not player.last_all_letters:
-        player.last_all_letters = "".join(NewLetters(language, 8))
-        player.save()
     left_letters = list((Counter(player.last_all_letters) - Counter(
-            player.last_temp_letters)).elements())
-    if not Word.objects.filter(word=player.last_temp_letters, language=language).exists():
-        to_add = True
-    else:
-        to_add = False            
+        player.last_temp_letters)).elements())    
     return render_to_response('play/main.html', {'left_letters': left_letters,
-        'to_add': to_add}, context_instance=RequestContext(request))
+        'player': player}, context_instance=RequestContext(request))
 
 def StartPlay(request):
     player = UserProfile.objects.get(user=request.user)
@@ -38,23 +32,23 @@ def StartPlay(request):
     return HttpResponseRedirect(reverse('play'))
 
 def Check(request):
+    player = UserProfile.objects.get(user=request.user)
+    language = request.session.get('language', 'pl')
+    language = Language.objects.get(short=language)
+    left_letters = list((Counter(player.last_all_letters) - Counter(
+        player.last_temp_letters)).elements())
     try:
-        player = UserProfile.objects.get(user=request.user)
-        language = request.session.get('language', 'pl')
-        language = Language.objects.get(short=language)
         w = Word.objects.get(word=player.last_temp_letters, language=language)
         player.last_score += w.points
         left_letters += NewLetters(language, len(player.last_temp_letters))
         player.last_temp_letters = ''
         player.last_all_letters = ''.join(left_letters)
         player.save()
-    except ObjectDoesNotExist:
-        messages.error(request, "Tego słowa nie ma przecież w słowniku")
-    player.best_score += 1
-    player.save()
-    return render_to_response('play/main.html', 
-            {'left_letters': player.last_all_letters},
-            context_instance=RequestContext(request))
+    except DatabaseError:
+        return render_to_response('play/main.html', {'not_existing': True,
+           'left_letters': left_letters, 'player': player}, 
+           context_instance=RequestContext(request))
+    return  HttpResponseRedirect(reverse('play'))
 
 def AddLetter(request, letter):
     player = UserProfile.objects.get(user=request.user)

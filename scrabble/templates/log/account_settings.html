@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+  <form action="" method="POST">{% csrf_token %}
+    <div class="login-form">
+        {% for field in form %}
+          <div class="control-group">
+            {{ field.errors }}
+            {{ field.label_tag}}
+            {{field.help_text}}
+            {{ field }}
+          </div>
+        {% endfor %}
+        <input type="submit" name = "log" value = "Zachowaj zmiany"/>
+    </div>
+  </form>
+{% endblock %}
+ 
