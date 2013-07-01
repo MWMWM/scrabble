@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-from scrabble.models import User, UserProfile
+from scrabble.models import User, UserProfile, Word
 from log.forms import LogForm, RegistrationForm, AccountForm
 
 def Login(request, where):
@@ -20,7 +20,6 @@ def Login(request, where):
             person = authenticate(username=name, password=password)
             if person is not None:
                 login(request, person)
-                where = where.replace('Register/', '')
                 return HttpResponseRedirect(where)
     else:
         form = LogForm()
@@ -33,13 +32,8 @@ def Register(request, where):
         if form.is_valid():
             name = form.cleaned_data['name']
             password = form.cleaned_data['password']
-            if not User.objects.filter(username=name):
-                user = User.objects.create_user(username=name,
-                        password=password)
-                UserProfile.objects.create(user=user, last_temp_letters='a',
-                        last_all_letters='ab', best_score=0, last_score=0)
-            else:
-                messages.error(request, 'konto o takim loginie już istnieje')
+            user = User.objects.create_user(username=name, password=password)
+            UserProfile.objects.create(user=user)
             person = authenticate(username=name, password=password)
             if person is not None:
                 login(request, person)
@@ -49,23 +43,30 @@ def Register(request, where):
     return render_to_response('log/register.html', {'form': form},
             context_instance=RequestContext(request))
 
-def Logout(request, where):
+def Logout(request):
     logout(request)
-    return HttpResponseRedirect(where)
+    return HttpResponseRedirect(reverse('home'))
 
-def AccountSettings(request, username):
-    if request.user.username == username:
-        if request.POST:
-            form = AccountForm(user=request.user, data=request.POST)
-            if form.is_valid():
-                user = User.objects.get(username=username)
-                user.set_password(form.cleaned_data['password'])
-                user.save()
-                messages.info(request, "Twoje hasło zostało zmienione")
-        else:
-            form = AccountForm(user=request.user)
+def AccountSettings(request):
+    if request.POST:
+        form = AccountForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            user = User.objects.get(username=request.user.username)
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            messages.info(request, "Twoje hasło zostało zmienione")
     else:
-        messages.error(request, "Nie masz prawa edytować tamtej strony")
-        return HttpResponseRedirect(reverse('home'))
+        form = AccountForm(user=request.user)
     return render_to_response('log/account_settings.html', {'form': form},
             context_instance=RequestContext(request))
+
+def DeleteAccount(request):
+    who = request.user
+    Word.objects.filter(added_by=who).delete()
+    logout(request)
+    UserProfile.objects.get(user=who).delete()
+    who.delete()
+    return HttpResponseRedirect(reverse('home'))
+
+
+

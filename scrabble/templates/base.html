@@ -61,13 +61,20 @@
                         Jesteś zalogowany jako {{request.user}}</a>
                       <ul>
                         <li>
-                        <a href='{% url 'account_settings' request.user %}'>
-                        Zmień hasło
-                        </a>
+                          <a href='{% url 'account_settings' %}'>
+                            Zmień hasło
+                          </a>
                         </li>  
                         <li>
-                        <a href='{% url 'logout' request.path %}'> Wyloguj się </a>
+                          <a href='{% url 'logout' %}'> 
+                            Wyloguj się 
+                          </a>
                         </li>
+                        <li>
+                          <a href='{% url 'delete_account' %}'>
+                            Usuń moje konto
+                          </a>
+                        </li>  
                       </ul>
                     </li>
                     {% else %}
@@ -93,7 +100,7 @@
       <div class ="row">
           <div class="span1"></div>
   <div class="span7">
-    <h4 class="mbl pbl"> {% block content %} {% endblock %} </h4>
+    <h4 class="mbl pbl"> {% block content %} {% endblock %}</h4>
         {% block informations %}
           {% for message in messages %}
             {{message}}
@@ -103,17 +110,19 @@
   </div>
   <div class="span3">
       aktualnie ustawiony język:
-        <div class="btn btn-primary btn-large btn-block">{{lang}} 
-        </div>
+      <div class="btn btn-primary btn-large btn-block">
+          {{lang}} 
+      </div>
       zmień na:
       {% for language in languages %} 
         {% ifnotequal lang language.short %}
-            <div class="btn btn-primary btn-large btn-block">
-              <a href = '' id="lang_{{language.short}}">
-                {{language.short}}</a>
-            </div><br/>
-        {% endifnotequal %}{% endfor %}
+          <a class="btn btn-primary btn-large btn-block" href="" id="lang_{{language.short}}">
+            {{language.short}}
+          </a><br/>
+        {% endifnotequal %}
+      {% endfor %}
   </div>
 </div>
+
 </body>
 </html>

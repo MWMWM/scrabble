@@ -23,14 +23,15 @@ class LogForm(RegistrationForm):
         if not User.objects.filter(username=name).exists():
             raise forms.ValidationError("taki login nie istnieje")
         return name
-    def clean_password(self):
-        name = self.cleaned_data['name']
-        password = self.cleaned_data['password']
+    def clean(self):
+        cleaned_data = super(LogForm, self).clean()
+        name = cleaned_data.get('name')
+        password = cleaned_data.get('password')
         if name and password:
             person = authenticate(username=name, password=password)
             if person is None:
                 raise forms.ValidationError("podaj prawidłowe hasło")
-        return password
+        return cleaned_data
 
 class AccountForm(forms.Form):
     temp_password = forms.CharField(max_length=32, label="Aktualne hasło",

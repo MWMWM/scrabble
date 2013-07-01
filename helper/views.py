@@ -13,10 +13,7 @@ from helper.forms import AddForm, FindForm
 def AddPage(request):
     if request.POST:
         form = AddForm(request.POST, request.FILES)
-        if not request.user.username:
-            messages.error(request, 'By dodać jakiekolwiek słowo \
-                    musisz być zalogowany')
-        elif form.is_valid():
+        if form.is_valid():
             words = form.cleaned_data['words']
             wordsfile = form.cleaned_data['wordsfile']
             if words:
@@ -46,24 +43,22 @@ def FindPage(request, word=''):
                 if not request.user.username:
                     messages.error(request, 'Aby skorzystać z tej opcji \
                             musisz być zalogowany')
-                    adders =[]
+                    adders = []
                 else:
                     user = User.objects.get(username=request.user)
                     adders = [user, ]
             language = request.session.get('language', 'pl')
             language = Language.objects.get(short=language)
-            existing_words = []
             if '*' in word:
-                for letter in language.letters:
-                    for adder in adders:
-                        existing_words += Word.objects.filter(
-                                code=Code(word.replace('*', letter)), 
-                                language=language, added_by=adder).order_by('-points')
+                for_regex = ['^' + r'?'.join(Code(word.replace('*', letter))) \
+                        + '?$' for letter in language.letters]
+                my_regex = '(' + '|'.join(for_regex) + ')'
             else:
-                for adder in adders:
-                    existing_words += Word.objects.filter(code=Code(word),
-                        language=language, added_by=adder).order_by('-points')
+                my_regex = r'^' + r'?'.join(Code(word)) + '?$'
+            existing_words = Word.objects.filter(code__regex=my_regex,
+                    language=language, added_by__in=adders).order_by('-points')
     else:
+        existing_words = []
         form = FindForm()
     return render_to_response('helper/find.html', {'form': form, 'word': word, 
         'words': existing_words}, context_instance=RequestContext(request))
@@ -81,6 +76,7 @@ def AddWord(request, word, where):
 def AddWords(request, text):
     language = request.session.get('language', 'pl')
     language = Language.objects.get(short=language)
+    messages.info(request, u'Twoje słowa są dodawane do bazy')
     t = threading.Thread(target=AddWordsT, kwargs={'language': language,
         'text': text, 'user': request.user})
     t.setDaemon(True)
@@ -104,15 +100,17 @@ def Delete(request, word, where):
                 które nie należy do Ciebie')
     return HttpResponseRedirect(where)
 
-def CheckSubwords(word, language):
-    words = Word.objects.filter(code=Code(word), language=language)
+def CheckSubwords(letters, language):
+    for_regex = '^' + r'?'.join(Code(letters)) + '?$'
+    words = Word.objects.filter(code__regex=for_regex, language=language)
     return words
 
 def AddOne(word, language, added_by):
     if word == word.lower() and 1 < len(word) < 9:
-        if not Word.objects.filter(word=word, language=language, added_by=added_by).exists():
-            Word.objects.create(code=Code(word), word=word, language=language,  
-                    points=SetPoints(word), added_by=added_by)
+        word, created = Word.objects.get_or_create(code=Code(word),
+                word=word, language=language, points=SetPoints(word))
+        if not Word.objects.filter(word=word, added_by=added_by).exists():
+            word.added_by.add(added_by)
             return 1
     return 0
 

@@ -33,14 +33,30 @@
   </div>
 </div>
 <br/>
+<div class="row">
+  <div class="span2">
+    <a class="btn btn-large btn-block btn-primary" href ="{% url 'check' %}">
+        Sprawdź słowo
+     </a>
+  </div>
+  <div class="span2">
+    <a class="btn btn-large btn-block btn-primary" href='{% url 'changeletters' %}'> 
+        Wymień literki 
+      </a>
+  </div>
+  <div class="span2">
+    <a class="btn btn-large btn-block btn-primary" href="{% url 'start_play' %}"> 
+          Nowa gra 
+      </a>
 
-<a href="{% url 'start_play' %}"> Nowa gra </a><br/>
-<a href ="{% url 'check' %}">Sprawdź słowo </a>
-<a href='{% url 'changeletters' %}'> Wymień literki </a><br/>
-
-{% if not_existing %}
-    słowa "{{player.last_temp_letters}}" nie ma w słowniku
+  </div>
+</div>
+<hr/>
+    {% if not_existing and player.last_temp_letters %}
+      słowa "{{player.last_temp_letters}}" nie ma w słowniku
         <a href='{% url 'add_word' player.last_temp_letters request.path %}'> 
-        Dodaj je do słownika<br/>
-{% endif %}<br/>
+          Dodaj je do słownika
+        </a>
+    {% endif %}
+
 {% endblock %}

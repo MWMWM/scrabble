@@ -40,15 +40,24 @@ def Check(request):
     try:
         w = Word.objects.get(word=player.last_temp_letters, language=language)
         player.last_score += w.points
+        if w.points > 4:
+            messages.info(request, 'Dodano Ci {} punktów'.format(w.points))
+        else:
+            messages.info(request, 'Dodano Ci {} punkty'.format(w.points))
         left_letters += NewLetters(language, len(player.last_temp_letters))
         player.last_temp_letters = ''
         player.last_all_letters = ''.join(left_letters)
         player.save()
-    except DatabaseError:
+    except (DatabaseError, ObjectDoesNotExist):
         return render_to_response('play/main.html', {'not_existing': True,
            'left_letters': left_letters, 'player': player}, 
            context_instance=RequestContext(request))
     return  HttpResponseRedirect(reverse('play'))
+
+def FindTheBestSubword(letters, language):
+    for_regex = '^' + r'?'.join(Code(letters)) + '?$'
+    word = Word.objects.filter(code__regex=for_regex, language=language).order_by('points')[0]
+    return word
 
 def AddLetter(request, letter):
     player = UserProfile.objects.get(user=request.user)
@@ -102,7 +111,7 @@ def Guess(request, result=0, guesses=0, all_letters='', temp_letters=''):
                 messages.info(request, u"Utworzony wyraz nie był poprawny, \
                         można było utworzyć <{}>".format('>, <'.join(
                             w.word for w in word)))
-        all_letters = random.choice(Word.objects.filter(language=language))
+        all_letters = Word.objects.all().order_by('?')[0]
         return HttpResponseRedirect(reverse('guessed', kwargs={
             'result': result, 'guesses': guesses, 'all_letters': all_letters}))
     return render_to_response('play/guess.html', {'result': result,

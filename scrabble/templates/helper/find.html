@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <div class="todo-search">
+  <div class="login-form">
     <form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
       Szukaj słowa<br/>
       {% for field in form %}
@@ -34,7 +34,7 @@
     </ul>
   {% else %} 
     {% if word %} 
-    Nie możesz ułożyć żadnego słowa ze wszystkich literek. 
+    Nie możesz ułożyć żadnego słowa ze swoich literek. 
     {% endif %}
   {% endif %}
 {% endblock %}
