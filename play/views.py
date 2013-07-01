@@ -14,6 +14,10 @@ from django.db import DatabaseError
 from scrabble.models import Word, UserProfile, Language, UserProfile, NewLetters
 from helper.views import Code, AddWord, CheckSubwords
 
+def ChoseForm(nb, option_less, option_more):
+    if nb > 4:
+        return str(nb) + ' ' + option_more
+    return str(nb) + option_less
 
 def Play(request):
     player = UserProfile.objects.get(user=request.user)
@@ -39,11 +43,10 @@ def Check(request):
         player.last_temp_letters)).elements())
     try:
         w = Word.objects.get(word=player.last_temp_letters, language=language)
+        messages.info(request, TellTheBest(player.last_all_letters, language))
         player.last_score += w.points
-        if w.points > 4:
-            messages.info(request, 'Dodano Ci {} punktów'.format(w.points))
-        else:
-            messages.info(request, 'Dodano Ci {} punkty'.format(w.points))
+        messages.info(request, u'Dodano Ci {}'.format(ChoseForm(
+            w.points, 'punkty', u'punktów')))
         left_letters += NewLetters(language, len(player.last_temp_letters))
         player.last_temp_letters = ''
         player.last_all_letters = ''.join(left_letters)
@@ -54,10 +57,15 @@ def Check(request):
            context_instance=RequestContext(request))
     return  HttpResponseRedirect(reverse('play'))
 
-def FindTheBestSubword(letters, language):
+def TellTheBest(letters, language): 
     for_regex = '^' + r'?'.join(Code(letters)) + '?$'
-    word = Word.objects.filter(code__regex=for_regex, language=language).order_by('points')[0]
-    return word
+    try:
+        word = Word.objects.filter(code__regex=for_regex, language=language).order_by(
+                '-points')[0]
+    except IndexError:
+        return u'Nie można ułożyć żadnego słowa'
+    return u'Najlepsze słowo, jakie można było ułożyć, to {} za {}'.format(
+            word.word, ChoseForm(word.points, 'punkty', u'punktów'))
 
 def AddLetter(request, letter):
     player = UserProfile.objects.get(user=request.user)

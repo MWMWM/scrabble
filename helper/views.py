@@ -7,6 +7,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import DatabaseError
 from scrabble.models import Word, User, Language, SetPoints
 from helper.forms import AddForm, FindForm
 
@@ -32,21 +34,10 @@ def AddPage(request):
 def FindPage(request, word=''):
     existing_words = []
     if request.POST:
-        form = FindForm(request.POST)
+        form = FindForm(request.user, request.POST)
         if form.is_valid():
             word = form.cleaned_data['letters']
-            if form.cleaned_data['how'] == '3':  # z danych wybranych osób
-                adders = form.cleaned_data['where']
-            elif form.cleaned_data['how'] == '2':  # ze wszystkich użytkowników
-                adders = User.objects.all()
-            elif form.cleaned_data['how'] == '1':  # z danych użytkownika
-                if not request.user.username:
-                    messages.error(request, 'Aby skorzystać z tej opcji \
-                            musisz być zalogowany')
-                    adders = []
-                else:
-                    user = User.objects.get(username=request.user)
-                    adders = [user, ]
+            adders = form.cleaned_data['adders']
             language = request.session.get('language', 'pl')
             language = Language.objects.get(short=language)
             if '*' in word:
@@ -58,8 +49,7 @@ def FindPage(request, word=''):
             existing_words = Word.objects.filter(code__regex=my_regex,
                     language=language, added_by__in=adders).order_by('-points')
     else:
-        existing_words = []
-        form = FindForm()
+        form = FindForm(request.user)
     return render_to_response('helper/find.html', {'form': form, 'word': word, 
         'words': existing_words}, context_instance=RequestContext(request))
 
@@ -95,9 +85,8 @@ def Delete(request, word, where):
         word_to_delete = Word.objects.get(word=word, added_by=request.user,
             language=language)
         word_to_delete.delete()
-    except IndexError:
-        messages.error(request, 'Nie możesz usunąć słowa, \
-                które nie należy do Ciebie')
+    except (IndexError, ObjectDoesNotExist, DatabaseError):
+        messages.error(request, 'Nie możesz usunąć tego słowa')
     return HttpResponseRedirect(where)
 
 def CheckSubwords(letters, language):
