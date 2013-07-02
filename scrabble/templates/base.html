@@ -115,11 +115,9 @@
       </div>
       zmień na:
       {% for language in languages %} 
-        {% ifnotequal lang language.short %}
           <a class="btn btn-primary btn-large btn-block" href="" id="lang_{{language.short}}">
             {{language.short}}
           </a><br/>
-        {% endifnotequal %}
       {% endfor %}
   </div>
 </div>

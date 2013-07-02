@@ -8,9 +8,10 @@ from django.http import HttpResponse
 from scrabble.models import Word, Language, User
 
 def MyContextProcessor(request):
+    lang = request.session.get('language', 'pl')
     return {'user':request.user, 
-            'lang': request.session.get('language', 'pl'),
-            'languages': Language.objects.all()}
+            'lang': lang,   
+            'languages': Language.objects.exclude(short=lang)}
 
 def ChangeLang(request, lang):
     request.session['language'] = lang

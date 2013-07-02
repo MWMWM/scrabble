@@ -11,6 +11,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError
 from scrabble.models import Word, User, Language, SetPoints
 from helper.forms import AddForm, FindForm
+import magic
+import subprocess
+
 
 def AddPage(request):
     if request.POST:
@@ -23,7 +26,7 @@ def AddPage(request):
             if wordsfile:
                 file = request.FILES['wordsfile']
                 if file:
-                    AddWords(request, file.read().decode('utf-8'))
+                    AddWords(request, file.read())
                 else:
                     messages.error(request, 'Nie wybrano pliku do dodania')
     else:
@@ -63,14 +66,35 @@ def AddWord(request, word, where):
         messages.error(request, 'By dodać jakieś słowo musisz być zalogowany')
     return HttpResponseRedirect(where)
 
+def GetRawText(file, request):
+    file_type = magic.from_buffer(file, mime=True)
+    if file_type == 'text/plain':
+        file_type = magic.from_buffer(file)
+        if file_type == 'ASCII text':
+            return file
+        if file_type ==  'UTF-8 Unicode text':
+            return file.decode('utf-8')
+        elif 'UTF-16' in file_type:
+            return file.decode('utf-16')
+        else:
+            messages.error(request, 'Nie rozpoznaję kodowania pliku')
+    elif file_type == 'application/pdf':
+        messages.error(request, 'Ten format nie jest jeszcze obsługiwany')
+    else:
+        messages.error(request, 'Ten format nie jest obsługiwany')
+    return None
+
+
 def AddWords(request, text):
-    language = request.session.get('language', 'pl')
-    language = Language.objects.get(short=language)
-    messages.info(request, u'Twoje słowa są dodawane do bazy')
-    t = threading.Thread(target=AddWordsT, kwargs={'language': language,
-        'text': text, 'user': request.user})
-    t.setDaemon(True)
-    t.start()
+    text = GetRawText(text, request)
+    if text:
+        language = request.session.get('language', 'pl')
+        language = Language.objects.get(short=language)
+        messages.info(request, u'Twoje słowa są dodawane do bazy')
+        t = threading.Thread(target=AddWordsT, kwargs={'language': language,
+            'text': text, 'user': request.user})
+        t.setDaemon(True)
+        t.start()
     return True
 
 def AddWordsT(language, text, user):
