@@ -26,7 +26,6 @@ class FindForm(forms.Form):
             lookup_options +=(('moich', 'moich'), )
         more_lookup_options = [(person, person) for person in User.objects.all()]
         all_lookup_options = lookup_options + tuple(more_lookup_options)
-        print all_lookup_options
         self.fields['adders'].choices = all_lookup_options
 
     def clean_adders(self):

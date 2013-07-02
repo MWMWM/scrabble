@@ -68,11 +68,11 @@ def AddWord(request, word, where):
 
 def GetRawText(file, request):
     file_type = magic.from_buffer(file, mime=True)
-    if file_type == 'text/plain':
+    if 'text/' in file_type:
         file_type = magic.from_buffer(file)
         if file_type == 'ASCII text':
             return file
-        if file_type ==  'UTF-8 Unicode text':
+        if 'UTF-8' in file_type:
             return file.decode('utf-8')
         elif 'UTF-16' in file_type:
             return file.decode('utf-16')
