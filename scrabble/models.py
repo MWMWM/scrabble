@@ -48,5 +48,8 @@ u'v':2, u'w':1, u'x':3, u'y':2, u'z':1, u'ź':9, u'ż':5}
 def SetPoints(word):
     points = 0
     for i in word:
-        points += points_table[i]
+        try:
+            points += points_table[i]
+        except KeyError:
+            points += 10
     return points

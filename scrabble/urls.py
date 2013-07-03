@@ -9,7 +9,7 @@ urlpatterns = patterns('',
 
 urlpatterns += patterns('scrabble.views',
         url(r'^$', 'Home', name='home'),
-        url(r'^Lang/(?P<lang>\w\w)$', 'ChangeLang', name='change_lang'),
+        url(r'^Lang/(?P<lang>\w+)$', 'ChangeLang', name='change_lang'),
         )
 
 urlpatterns += patterns('log.views',
@@ -27,6 +27,7 @@ urlpatterns += patterns('helper.views',
             name='add_word'),
         url(r'^delete/(?P<word>\w+)/(?P<where>.+)$', 'Delete',
             name='delete_word'),
+        url(r'^add_lang/$', 'AddLanguage', name='add_lang'),
         )
 
 urlpatterns += patterns('play.views',

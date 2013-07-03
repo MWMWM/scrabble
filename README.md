@@ -6,3 +6,9 @@ Take the use of:
 - adding and removing Your own words,
 (It's possible to add words only from .txt files or those written in an input place)
 - playing one of two games: guessing the word, finding the best word.
+
+
+TODO
+========
+- improve .css files,
+- enable assesing new letters,

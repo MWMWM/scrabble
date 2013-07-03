@@ -44,10 +44,11 @@
                     <li>
                       <a href='{% url 'find' %}'> Szukaj słów </a>
                     </li>
-                    {% if request.user.is_authenticated %}
-                    <li>
-                      <a href='{% url 'add' %}'> Dodaj słowa </a>
-                    </li>
+                      {% if request.user.is_authenticated %}
+                        <li>
+                          <a href='{% url 'add' %}'> Dodaj słowa </a>
+                        </li>
+                      {% endif %}
                     <li>
                       <a href="#fakelink"> Graj </a>
                       <ul>
@@ -57,10 +58,11 @@
                           </li>
                         {% endif %}
                         <li>
-                          <a href='{% url 'guess' %}'> Zgadnij </a>
+                          <a href='{% url 'guess' %}'> Zgadnij jakie to słowo </a>
                           </li>
                       </ul>
-                    </li>
+                      </li>
+                    {% if request.user.is_authenticated %}
                     <li>
                       <a href='#fakelink'>
                         Jesteś zalogowany jako {{request.user}}</a>
@@ -125,10 +127,14 @@
       </div>
       zmień na:
       {% for language in languages %} 
-          <a class="btn btn-primary btn-large btn-block" href="" id="lang_{{language.short}}">
-            {{language.short}}
-          </a><br/>
+        <a class="btn btn-primary btn-large btn-block" href="" id="lang_{{language.short}}">
+          {{language.short}}
+        </a><br/>
       {% endfor %}
+      <a class="btn btn-info btn-large btn-block" href='{% url 'add_lang' %}' id="lang_{{language.short}}">
+            dodaj nowy język
+      </a><br/>
+
   </div>
 </div>
 

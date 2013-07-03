@@ -3,7 +3,7 @@
 
 import re
 from django import forms
-from scrabble.models import Word, User
+from scrabble.models import Word, User, Language
 
 
 class AddForm(forms.Form):
@@ -45,4 +45,20 @@ class FindForm(forms.Form):
                  return [User.objects.get(username=self.user), ]
         else:
             return [User.objects.get(username=adders), ]
-    
+
+class LangForm(forms.ModelForm):
+    instances = forms.CharField(max_length=200,
+            label="przykłady słów w tym języku")
+    short = forms.CharField(max_length=2, label='dwuliterowy skrót')
+    name = forms.CharField(max_length=20, label='pełna nazwa')
+    letters = forms.CharField(max_length=50,label='alfabet')
+    class Meta:
+        model = Language
+        
+
+    def clean_letters(self):
+        letters = self.cleaned_data['letters']
+        if len(letters) < 10:
+            raise forms.ValidationError('Zbyt mało literek ma ten alfabet')
+        return letters
+

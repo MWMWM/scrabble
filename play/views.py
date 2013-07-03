@@ -81,7 +81,7 @@ def DeleteLetter(request, letter):
 
 def ChangeLetters(request):
     player = UserProfile.objects.get(user=request.user)
-    language = request.session.get('lang', 'pl')
+    language = request.session.get('language', 'pl')
     language = Language.objects.get(short=language)
     words = CheckSubwords(player.last_all_letters, language)
     if words:

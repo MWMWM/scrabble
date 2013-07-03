@@ -16,7 +16,7 @@ from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 from cStringIO import StringIO
 from scrabble.models import Word, User, Language, SetPoints
-from helper.forms import AddForm, FindForm
+from helper.forms import AddForm, FindForm, LangForm
 
 
 def AddPage(request):
@@ -33,7 +33,7 @@ def AddPage(request):
                 if wordsfile:
                     text = GetRawText(request, wordsfile)
                     if text:
-                        messages.info('Słowa z pliku są dodawane')
+                        messages.info(request, 'Słowa z pliku są dodawane')
                         AddWords(request, text)
     else:
         form = AddForm()
@@ -62,6 +62,16 @@ def FindPage(request, word=''):
         form = FindForm(request.user)
     return render_to_response('helper/find.html', {'form': form, 'word': word, 
         'words': existing_words}, context_instance=RequestContext(request))
+
+def AddLanguage(request):
+    if request.POST:
+        form = LangForm(request.POST)
+        if form.is_valid():
+            form.save()
+    else:
+        form = LangForm()
+    return render_to_response('helper/language.html', {'form': form},
+            context_instance=RequestContext(request))
 
 
 def AddWord(request, word, where):
@@ -139,7 +149,7 @@ def ConvertPdf(wordsfile):
     device.close()
     converted_text = retstr.getvalue()
     retstr.close()
-    #for enc in ['utf-8', 'utf-16']:
+    #for enc in ['utf-8', 'utf-16', 'windows-1253', 'iso-8859-7']:
     #    try:
     #        return converted_text.decode(enc)
     #    except Exception:
