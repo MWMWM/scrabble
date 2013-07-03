@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
+        {% if form.errors %}
+        {{form.errors}}
+        {% endif %}
+      {% for field in form %}
+      <div class="control-group">
+
+          {{ field.label_tag}}
+          {{ field.errors }}
+          {{ field }}
+  </div>
+      {% endfor %}
+      {% block submit_button %} {% endblock %}
+  </form>
+
+{% endblock %}

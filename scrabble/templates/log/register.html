@@ -1,17 +1,5 @@
-{% extends "base.html" %}
+{% extends "with_form.html" %}
 
-{% block content %}
-  <form action="" method="POST">{% csrf_token %}
-      <div class="login-form">
-        {% for field in form %}
-          <div class="control-group">
-            {{ field.errors }}
-            {{ field.label_tag}}
-            {{field.help_text}}
-            {{ field }}
-          </div>
-        {% endfor %}
-        <input type="submit" name = "addlog" value = "Utwórz konto i zaloguj"/>
-    </div>
-  </form>
+{% block submit_button %}
+    <input type="submit" name = "addlog" value = "Utwórz konto i zaloguj"/>
 {% endblock %}

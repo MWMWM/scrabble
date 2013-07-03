@@ -49,13 +49,18 @@
                       <a href='{% url 'add' %}'> Dodaj słowa </a>
                     </li>
                     <li>
-                      <a href='{% url 'play' %}'> Graj </a>
+                      <a href="#fakelink"> Graj </a>
+                      <ul>
+                        {% if request.user.is_authenticated %}
+                          <li>
+                            <a href='{% url 'play' %}'> Znajdź najlepsze słowo</a>
+                          </li>
+                        {% endif %}
+                        <li>
+                          <a href='{% url 'guess' %}'> Zgadnij </a>
+                          </li>
+                      </ul>
                     </li>
-                    {% endif %}
-                    <li>
-                      <a href='{% url 'guess' %}'> Zgadnij słowo </a>
-                    </li>
-                    {% if request.user.is_authenticated %}
                     <li>
                       <a href='#fakelink'>
                         Jesteś zalogowany jako {{request.user}}</a>
@@ -97,16 +102,21 @@
           </div>
         </div>
       </div> 
-      <div class ="row">
-          <div class="span1"></div>
-  <div class="span7">
-    <h4 class="mbl pbl"> {% block content %} {% endblock %}</h4>
+  <div class="span8">
+      <div class="tile">
+        <div class="login-form">
+         {% block content %} 
+         {% endblock %}
+        </div>
+      <div class="tile">
         {% block informations %}
           {% for message in messages %}
             {{message}}
             {% if forloop.last %}. {% else %}, {% endif %}<br/>
           {% endfor %}
         {%endblock %}
+      </div>
+    </div>
   </div>
   <div class="span3">
       aktualnie ustawiony język:

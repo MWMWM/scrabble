@@ -40,10 +40,10 @@ class Word(models.Model):
 def NewLetters(language, how_many=1):
         return random.sample(language.letters, how_many)
 
-points_table = {'a':1, u'ą':5, 'b':3, 'c':2, u'ć':6, 'd':2, 'e':1, u'ę':5, 'f':5,
-'g':3, 'h':3, 'i':1, 'j':3, 'k':2, 'l':2, u'ł':3, 'm':2, 'n':1, u'ń':7, 'o':1,
-u'ó':5, 'p':2, 'q':2, 'r':1, 's':1, u'ś':5, 't':2, 'u':3, 'v':2, 'w':1, 'x':3,
-'y':2, 'z':1, u'ź':9, u'ż':5}
+points_table = {u'a':1, u'ą':5, u'b':3, u'c':2, u'ć':6, u'd':2, u'e':1, u'ę':5,
+u'f':5, u'g':3, u'h':3, u'i':1, u'j':3, u'k':2, u'l':2, u'ł':3, u'm':2, u'n':1,
+u'ń':7, u'o':1, u'ó':5, u'p':2, u'q':2, u'r':1, u's':1, u'ś':5, u't':2, u'u':3,
+u'v':2, u'w':1, u'x':3, u'y':2, u'z':1, u'ź':9, u'ż':5}
 
 def SetPoints(word):
     points = 0

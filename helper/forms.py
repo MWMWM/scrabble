@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-
+import re
 from django import forms
 from scrabble.models import Word, User
 
@@ -11,6 +11,12 @@ class AddForm(forms.Form):
             label="słowo/a (podaj oddzielane przecinkami)")
     wordsfile = forms.FileField(required=False,
             label="słowa z pliku (w formacie .txt)")
+
+    def clean_words(self):
+        words = self.cleaned_data['words']
+        if re.search('[."\'-<>\d?!;:()/]', words):
+            return ValidationError("Wpisano niedozwolone znaki")
+        return words
 
 
 class FindForm(forms.Form):

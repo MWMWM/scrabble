@@ -1,19 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
+
 <div class ="row">
   <div class="span1">
   </div>
-  <div class="span3"> użytkownik<hr/>
+  <div class="span3"> użytkownik
+  </div>
+  <div class="span2"> najlepszy wynik
+  </div>
+</div>
+<br/>
+<div class="row">
+    <div class="span1">
+  </div>
+  <div class="span3">
     {% for user in users %} 
       {{user.username}}<br/>
     {% endfor %}
   </div>
-  <div class="span2"> najlepszy wynik<hr/>
+  <div class="span2"> 
     {% for user in users %} 
       {{user.userprofile.best_score}}<br/>
     {% endfor %}
   </div>
-</div>
+   </div>
+
 {% endblock %}
 

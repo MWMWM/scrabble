@@ -1,18 +1,7 @@
-{% extends "base.html" %}
+{% extends "with_form.html" %}
 
-{% block content %}
-<div class="login-form">
-  <form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
-       Dodaj<br/>
-      {% for field in form %}
-      <h3>{{ field.errors }}
-          {{ field.label_tag}}
-          {{field.help_text}}
-          {{ field }}</h3>
-      {% endfor %}
+{% block submit_button %}
       <input type="submit" name="add" value="Dodaj"/><br/>
-  </form>
-</div>
 {% endblock %}
 {% block informations %}
     {{block.super}}

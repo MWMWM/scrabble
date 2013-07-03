@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+
 import threading
 import re
 from django.http import HttpResponseRedirect
@@ -9,10 +10,13 @@ from django.template import RequestContext
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError
+import magic
+from pdfminer.pdfinterp import PDFResourceManager, process_pdf
+from pdfminer.converter import TextConverter
+from pdfminer.layout import LAParams
+from cStringIO import StringIO
 from scrabble.models import Word, User, Language, SetPoints
 from helper.forms import AddForm, FindForm
-import magic
-import subprocess
 
 
 def AddPage(request):
@@ -22,17 +26,20 @@ def AddPage(request):
             words = form.cleaned_data['words']
             wordsfile = form.cleaned_data['wordsfile']
             if words:
+                messages.info(request, 'Wpisane słowo/a są dodawane')
                 AddWords(request, words)
             if wordsfile:
-                file = request.FILES['wordsfile']
-                if file:
-                    AddWords(request, file.read())
-                else:
-                    messages.error(request, 'Nie wybrano pliku do dodania')
+                wordsfile = request.FILES['wordsfile']
+                if wordsfile:
+                    text = GetRawText(request, wordsfile)
+                    if text:
+                        messages.info('Słowa z pliku są dodawane')
+                        AddWords(request, text)
     else:
         form = AddForm()
     return render_to_response('helper/add.html', {'form': form},
             context_instance=RequestContext(request))
+
 
 def FindPage(request, word=''):
     existing_words = []
@@ -56,6 +63,7 @@ def FindPage(request, word=''):
     return render_to_response('helper/find.html', {'form': form, 'word': word, 
         'words': existing_words}, context_instance=RequestContext(request))
 
+
 def AddWord(request, word, where):
     if request.user.username:
         language = request.session.get('language', 'pl')
@@ -66,41 +74,22 @@ def AddWord(request, word, where):
         messages.error(request, 'By dodać jakieś słowo musisz być zalogowany')
     return HttpResponseRedirect(where)
 
-def GetRawText(file, request):
-    file_type = magic.from_buffer(file, mime=True)
-    if 'text/' in file_type:
-        file_type = magic.from_buffer(file)
-        if file_type == 'ASCII text':
-            return file
-        if 'UTF-8' in file_type:
-            return file.decode('utf-8')
-        elif 'UTF-16' in file_type:
-            return file.decode('utf-16')
-        else:
-            messages.error(request, 'Nie rozpoznaję kodowania pliku')
-    elif file_type == 'application/pdf':
-        messages.error(request, 'Ten format nie jest jeszcze obsługiwany')
-    else:
-        messages.error(request, 'Ten format nie jest obsługiwany')
-    return None
-
 
 def AddWords(request, text):
-    text = GetRawText(text, request)
-    if text:
-        language = request.session.get('language', 'pl')
-        language = Language.objects.get(short=language)
-        messages.info(request, u'Twoje słowa są dodawane do bazy')
-        t = threading.Thread(target=AddWordsT, kwargs={'language': language,
-            'text': text, 'user': request.user})
-        t.setDaemon(True)
-        t.start()
+    language = request.session.get('language', 'pl')
+    language = Language.objects.get(short=language)
+    t = threading.Thread(target=AddWordsT, kwargs={'language': language,
+        'text': text, 'user': request.user})
+    t.setDaemon(True)
+    t.start()
     return True
 
+
 def AddWordsT(language, text, user):
-    for word in re.split('[\s,?!;:()-]', text):
-        if re.search('[."\']', word) == None:
+    for word in re.split('[\s,?!;:()/]', text):
+        if re.search('[."\'-<>\d]', word) == None:
             AddOne(word, language, user)
+
 
 def Delete(request, word, where):
     language = request.session.get('language', 'pl')
@@ -113,19 +102,61 @@ def Delete(request, word, where):
         messages.error(request, 'Nie możesz usunąć tego słowa')
     return HttpResponseRedirect(where)
 
+
 def CheckSubwords(letters, language):
     for_regex = '^' + r'?'.join(Code(letters)) + '?$'
     words = Word.objects.filter(code__regex=for_regex, language=language)
     return words
 
+
+def GetRawText(request, wordsfile):
+    mime_type = magic.from_buffer(wordsfile.read(), mime=True)
+    if 'text/' in mime_type:
+        text = wordsfile.read()
+        file_type = magic.from_buffer(text)
+        if file_type == 'ASCII text':
+            return text
+        if 'UTF-8' in file_type:
+            return text.decode('utf-8')
+        elif 'UTF-16' in file_type:
+            return text.decode('utf-16')
+        else:
+            messages.error(request, 'Nie rozpoznaję kodowania pliku: {}'.format(file_type))
+    elif mime_type == 'application/pdf':
+        messages.error(request, 'Ten format nie jest jeszcze obsługiwany')
+        return ConvertPdf(wordsfile)
+    else:
+        messages.error(request, 'Ten format nie jest obsługiwany - znaleziono: {}'.format(mime_type))
+    return None
+
+
+def ConvertPdf(wordsfile):
+    rm = PDFResourceManager()
+    retstr = StringIO()
+    laparams = LAParams()
+    device = TextConverter(rm, retstr, laparams=laparams)
+    process_pdf(rm, device, wordsfile)
+    device.close()
+    converted_text = retstr.getvalue()
+    retstr.close()
+    #for enc in ['utf-8', 'utf-16']:
+    #    try:
+    #        return converted_text.decode(enc)
+    #    except Exception:
+    #        continue
+    return converted_text
+
+
 def AddOne(word, language, added_by):
     if word == word.lower() and 1 < len(word) < 9:
+        word = unicode(word)
         word, created = Word.objects.get_or_create(code=Code(word),
                 word=word, language=language, points=SetPoints(word))
         if not Word.objects.filter(word=word, added_by=added_by).exists():
             word.added_by.add(added_by)
             return 1
     return 0
+
 
 def Code(word):
     return ''.join(sorted(word[:]))

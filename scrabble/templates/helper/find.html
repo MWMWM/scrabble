@@ -1,19 +1,10 @@
-{% extends "base.html" %}
+{% extends "with_form.html" %}
 
-{% block content %}
-  <div class="login-form">
-    <form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
-      Szukaj słowa<br/>
-      {% for field in form %}
-        {{ field.errors }}
-        {{ field.label_tag}}
-        {{field.help_text}}
-        {{ field }}
-        {% endfor %}
-        <br/>
+{% block submit_button %}
       <input type="submit" name="find" value="Szukaj"/><br/>
-    </form>
-  </div>
+{% endblock %}
+{% block informations %}
+  {{block.super}}
   {% if words %} Możesz ułożyć słowa:
     <ul>
       {% for temp_word in words %}

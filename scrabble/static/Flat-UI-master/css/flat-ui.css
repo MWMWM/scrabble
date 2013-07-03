@@ -177,8 +177,8 @@ you can use the generic selector below, but it's slower:
   filter: unquote("progid:DXImageTransform.Microsoft.gradient(enabled = false)");
 }
 .dropdown-arrow-inverse {
-  border-bottom-color: #34495e !important;
-  border-top-color: #34495e !important;
+  border-bottom-color: 28200e !important;
+  border-top-color: 28200e !important;
 }
 .demo-headline {
   padding: 73px 0 110px;
@@ -413,7 +413,7 @@ you can use the generic selector below, but it's slower:
   }
 }
 body {
-  color: #34495e;
+  color: 28200e;
   font-family: "Lato", sans-serif;
   font-size: 14px;
   line-height: 1.231;
@@ -695,10 +695,10 @@ h6 {
   border-left-width: 6px;
   border-right-width: 6px;
   border-top-width: 8px;
-  border-bottom-color: #34495e;
+  border-bottom-color: 28200e;
   border-style: solid;
   border-bottom-style: none;
-  border-top-color: #34495e;
+  border-top-color: 28200e;
   -webkit-transition: 0.25s;
   -moz-transition: 0.25s;
   -o-transition: 0.25s;
@@ -888,7 +888,7 @@ h6 {
 .navbar .btn-navbar {
   background: none;
   border: none;
-  color: #34495e;
+  color: 28200e;
   margin: 21px 15px 17px;
   text-shadow: none;
   -webkit-box-shadow: none;
@@ -1065,7 +1065,7 @@ h6 {
   display: none;
 }
 .navbar .nav li.dropdown .dropdown-menu:after {
-  border-bottom-color: #34495e;
+  border-bottom-color: 28200e;
 }
 .navbar .nav li.dropdown .dropdown-menu > li > a {
   border-radius: 3px;
@@ -1215,7 +1215,7 @@ input[type="tel"],
 input[type="color"],
 .uneditable-input {
   border: 2px solid #bdc3c7;
-  color: #34495e;
+  color: 28200e;
   font-family: "Lato", sans-serif;
   font-size: 14px;
   padding: 8px 5px;
@@ -1604,7 +1604,7 @@ input[type="color"].flat:focus,
   border-radius: 6px;
 }
 .control-group input:focus + .input-icon {
-  color: #34495e;
+  color: 28200e;
 }
 .control-group.huge > .input-icon {
   line-height: 49px;
@@ -1823,7 +1823,7 @@ textarea[class*="span"] {
 .tagsinput input {
   background: transparent;
   border: none;
-  color: #34495e;
+  color: 28200e;
   font-family: "Lato", sans-serif;
   font-size: 14px;
   margin: 0px;
@@ -2289,13 +2289,13 @@ textarea[class*="span"] {
   padding-bottom: 9px;
 }
 .tooltip.top .tooltip-arrow {
-  border-top-color: #34495e;
+  border-top-color: 28200e;
   border-width: 9px 9px 0;
   bottom: 0;
   margin-left: -9px;
 }
 .tooltip.right .tooltip-arrow {
-  border-right-color: #34495e;
+  border-right-color: 28200e;
   border-width: 9px 9px 9px 0;
   margin-top: -9px;
   left: -3px;
@@ -2304,13 +2304,13 @@ textarea[class*="span"] {
   padding-top: 8px;
 }
 .tooltip.bottom .tooltip-arrow {
-  border-bottom-color: #34495e;
+  border-bottom-color: 28200e;
   border-width: 0 9px 9px;
   margin-left: -9px;
   top: -1px;
 }
 .tooltip.left .tooltip-arrow {
-  border-left-color: #34495e;
+  border-left-color: 28200e;
   border-width: 9px 0 9px 9px;
   margin-top: -9px;
   right: -3px;
@@ -2442,7 +2442,7 @@ textarea[class*="span"] {
 }
 .navbar-fixed-bottom .nav > li > ul:before {
   border-bottom: none;
-  border-top: 9px outset #34495e;
+  border-top: 9px outset 28200e;
   bottom: 4px;
   top: auto;
 }
@@ -2453,7 +2453,7 @@ textarea[class*="span"] {
   margin-bottom: 10px;
 }
 .open.dropup > .dropdown-arrow.dropdown-arrow-inverse {
-  border-top-color: #34495e;
+  border-top-color: 28200e;
 }
 .open > .dropdown-arrow {
   margin-top: 9px;
@@ -2635,7 +2635,7 @@ textarea[class*="span"] {
   text-indent: 0;
 }
 .has-switch label {
-  border: 4px solid #34495e;
+  border: 4px solid 28200e;
   border-radius: 50%;
   float: left;
   height: 21px;
@@ -2825,11 +2825,11 @@ textarea[class*="span"] {
   margin-top: -5px;
 }
 .tile {
-  background-color: #eff0f2;
+  background-color: #d1a462;
   border-radius: 6px;
   padding: 14px;
   position: relative;
-  text-align: center;
+  text-align: left;
 }
 .tile.tile-hot:before {
   background: url(../images/tile/ribbon.png) 0 0 no-repeat;
@@ -2877,7 +2877,7 @@ textarea[class*="span"] {
   list-style-type: none;
 }
 .todo li {
-  background: #34495e url(../images/todo/todo.png) 92% center no-repeat;
+  background: 28200e url(../images/todo/todo.png) 92% center no-repeat;
   background-size: 20px 20px;
   cursor: pointer;
   margin-top: 2px;
@@ -2911,7 +2911,7 @@ textarea[class*="span"] {
   background: #a87528;
   background-size: 16px 16px;
   border-radius: 6px 6px 0 0;
-  color: #34495e;
+  color: 28200e;
   padding: 19px 25px 20px;
 }
 .todo-search:before {
@@ -2927,7 +2927,7 @@ textarea[class*="span"] {
 input.todo-search-field {
   background: none;
   border: none;
-  color: #34495e;
+  color: 28200e;
   font-size: 19px;
   font-weight: 700;
   margin: 0;
@@ -2939,13 +2939,13 @@ input.todo-search-field {
   box-shadow: none;
 }
 input.todo-search-field:-moz-placeholder {
-  color: #34495e;
+  color: 28200e;
 }
 input.todo-search-field::-webkit-input-placeholder {
-  color: #34495e;
+  color: 28200e;
 }
 input.todo-search-field.placeholder {
-  color: #34495e;
+  color: 28200e;
 }
 .todo-icon {
   float: left;

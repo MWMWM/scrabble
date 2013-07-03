@@ -12,6 +12,7 @@
     {% endfor %}
   </div>
 </div>
+<br/>
 <div class="row">
   <div class="span2">
     Pozostałe literki:
@@ -24,6 +25,7 @@
       {% endfor %}
   </div>
 </div>
+<br/>
 <div class="row">
   <div class="span2">
     Aktualny wynik:
@@ -51,7 +53,6 @@
 
   </div>
 </div>
-<hr/>
     {% if not_existing and player.last_temp_letters %}
       słowa "{{player.last_temp_letters}}" nie ma w słowniku
         <a href='{% url 'add_word' player.last_temp_letters request.path %}'> 

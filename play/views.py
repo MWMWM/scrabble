@@ -119,7 +119,7 @@ def Guess(request, result=0, guesses=0, all_letters='', temp_letters=''):
                 messages.info(request, u"Utworzony wyraz nie był poprawny, \
                         można było utworzyć <{}>".format('>, <'.join(
                             w.word for w in word)))
-        all_letters = Word.objects.all().order_by('?')[0]
+        all_letters = Word.objects.filter(language=language).order_by('?')[0]
         return HttpResponseRedirect(reverse('guessed', kwargs={
             'result': result, 'guesses': guesses, 'all_letters': all_letters}))
     return render_to_response('play/guess.html', {'result': result,
