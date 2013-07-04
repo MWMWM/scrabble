@@ -3,16 +3,27 @@
 {% block content %}
 
     <form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
-      {{ form.non_field_errors }}
-      {% for field in form %}
-      <div class="control-group">
-
-          {{ field.label_tag}}
-          {{ field.errors }}
-          {{ field }}
-  </div>
-      {% endfor %}
-      {% block submit_button %} {% endblock %}
+        <div class="control-group">    
+            {{ form.non_field_errors }}
+        </div>
+        {% for field in form %}
+            {% if field.errors %}
+                <div class="control-group error">
+                {{ field.label_tag}}
+                {{ field.errors }}
+                {{ field }}
+            </div>
+            {% else %}
+            <div class="control-group">
+                {{ field.label_tag}}
+                {{ field.errors }}
+                {{ field }}
+            </div>
+            {% endif %}
+            {% endfor %}
+ <div class="control-group">
+     {% block submit_button %} {% endblock %}
+ </div>
   </form>
 
 {% endblock %}

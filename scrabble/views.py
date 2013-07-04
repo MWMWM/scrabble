@@ -1,21 +1,25 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.contrib import messages
 from django.http import HttpResponse
 from scrabble.models import Word, Language, User
 
+
 def MyContextProcessor(request):
     lang = request.session.get('language', 'pl')
-    return {'user':request.user, 
-            'lang': lang,   
+    return {'user':request.user,
+            'lang': lang,
             'languages': Language.objects.exclude(short=lang)}
+
 
 def ChangeLang(request, lang):
     request.session['language'] = lang
     return HttpResponse()
+
 
 def Home(request):
     words_number = Word.objects.distinct().count()

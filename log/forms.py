@@ -20,6 +20,7 @@ class RegistrationForm(forms.Form):
             raise forms.ValidationError("Taki login już istnieje")
         return name
 
+
 class LogForm(RegistrationForm):
     def clean_name(self):
         name = self.cleaned_data['name']

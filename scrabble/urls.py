@@ -27,7 +27,7 @@ urlpatterns += patterns('helper.views',
             name='add_word'),
         url(r'^delete/(?P<word>\w+)/(?P<where>.+)$', 'Delete',
             name='delete_word'),
-        url(r'^add_lang/$', 'AddLanguage', name='add_lang'),
+        url(r'^add_lang/(?P<where>.+)$', 'AddLanguage', name='add_lang'),
         )
 
 urlpatterns += patterns('play.views',

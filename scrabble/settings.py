@@ -7,7 +7,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+    ('M', 'waligorskamagdalena@gmail.com'),
 )
 
 MANAGERS = ADMINS
@@ -148,6 +148,8 @@ AUTH_PROFILE_MODULE = 'play.UserProfile'
 # the site admins on every HTTP 500 error when DEBUG=False.
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 LOGGING = {
     'version': 1,

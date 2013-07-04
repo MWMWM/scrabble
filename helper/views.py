@@ -63,11 +63,16 @@ def FindPage(request, word=''):
     return render_to_response('helper/find.html', {'form': form, 'word': word, 
         'words': existing_words}, context_instance=RequestContext(request))
 
-def AddLanguage(request):
+def AddLanguage(request, where=''):
     if request.POST:
         form = LangForm(request.POST)
         if form.is_valid():
             form.save()
+            words = form.cleaned_data['instances']
+            lang = form.cleaned_data['short']
+            AddWords(request, words, lang)
+            messages.info(request, 'Dodano nowy język i słowa')
+            return HttpResponseRedirect(where)
     else:
         form = LangForm()
     return render_to_response('helper/language.html', {'form': form},
@@ -85,8 +90,9 @@ def AddWord(request, word, where):
     return HttpResponseRedirect(where)
 
 
-def AddWords(request, text):
-    language = request.session.get('language', 'pl')
+def AddWords(request, text, language=''):
+    if not language:
+        language = request.session.get('language', 'pl')
     language = Language.objects.get(short=language)
     t = threading.Thread(target=AddWordsT, kwargs={'language': language,
         'text': text, 'user': request.user})

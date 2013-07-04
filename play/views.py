@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+
 import random
 from collections import Counter
 from django.http import HttpResponse, HttpResponseRedirect
@@ -14,10 +15,12 @@ from django.db import DatabaseError
 from scrabble.models import Word, UserProfile, Language, UserProfile, NewLetters
 from helper.views import Code, AddWord, CheckSubwords
 
+
 def ChoseForm(nb, option_less, option_more):
     if nb > 4:
         return str(nb) + ' ' + option_more
     return str(nb) + option_less
+
 
 def Play(request):
     player = UserProfile.objects.get(user=request.user)
@@ -28,12 +31,14 @@ def Play(request):
     return render_to_response('play/main.html', {'left_letters': left_letters,
         'player': player}, context_instance=RequestContext(request))
 
+
 def StartPlay(request):
     player = UserProfile.objects.get(user=request.user)
     language = request.session.get('language', 'pl')
     language = Language.objects.get(short=language)
     player.prepare_for_play(language)
     return HttpResponseRedirect(reverse('play'))
+
 
 def Check(request):
     player = UserProfile.objects.get(user=request.user)
@@ -57,6 +62,7 @@ def Check(request):
            context_instance=RequestContext(request))
     return  HttpResponseRedirect(reverse('play'))
 
+
 def TellTheBest(letters, language): 
     for_regex = '^' + r'?'.join(Code(letters)) + '?$'
     try:
@@ -67,17 +73,20 @@ def TellTheBest(letters, language):
     return u'Najlepsze słowo, jakie można było ułożyć, to {} za {}'.format(
             word.word, ChoseForm(word.points, 'punkty', u'punktów'))
 
+
 def AddLetter(request, letter):
     player = UserProfile.objects.get(user=request.user)
     player.last_temp_letters += letter
     player.save()
     return HttpResponseRedirect(reverse('play'))
 
+
 def DeleteLetter(request, letter):
     player = UserProfile.objects.get(user=request.user)
     player.last_temp_letters = player.last_temp_letters.replace(letter, '', 1)
     player.save()
     return HttpResponseRedirect(reverse('play'))
+
 
 def ChangeLetters(request):
     player = UserProfile.objects.get(user=request.user)
@@ -100,9 +109,11 @@ def ChangeLetters(request):
     player.save()
     return  HttpResponseRedirect(reverse('play'))
 
+
 def Delete(request, where, temp_letters, letter=''):
     temp_letters = temp_letters.replace(letter, '', 1)
     return HttpResponseRedirect('/' + where + '/' + temp_letters)
+
 
 def Guess(request, result=0, guesses=0, all_letters='', temp_letters=''):
     left_letters = list((Counter(all_letters) - Counter(temp_letters)).elements())

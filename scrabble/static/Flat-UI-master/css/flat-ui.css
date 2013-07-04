@@ -930,7 +930,8 @@ h6 {
 
 }
 .navbar-inverse .navbar-inner {
-  background: #59412f;
+  background-image:url('../images/4.png');
+  background-repeat:no-repeat;
   filter: unquote("progid:DXImageTransform.Microsoft.gradient(enabled = false)");
 }
 .navbar-inverse .brand {
@@ -1215,7 +1216,7 @@ input[type="tel"],
 input[type="color"],
 .uneditable-input {
   border: 2px solid #bdc3c7;
-  color: 28200e;
+  color: #28200e;
   font-family: "Lato", sans-serif;
   font-size: 14px;
   padding: 8px 5px;
@@ -1606,6 +1607,7 @@ input[type="color"].flat:focus,
 .control-group input:focus + .input-icon {
   color: 28200e;
 }
+
 .control-group.huge > .input-icon {
   line-height: 49px;
 }
@@ -1645,10 +1647,15 @@ textarea[readonly] {
   cursor: default;
 }
 input,
+.uneditable-input {
+  width: 210px;
+}
+
 textarea,
 .uneditable-input {
-  width: 192px;
+  width: 450px;
 }
+
 textarea {
   height: auto;
   font-size: 14.994px;
@@ -1839,9 +1846,7 @@ textarea[class*="span"] {
   cursor: pointer;
   font-size: 12px;
   opacity: 0;
-  padding: 7px 7px 5px 0;
-  position: absolute;
-  right: 0;
+  padding: 7px 7px 5px 0background: #301f07;;
   text-align: right;
   text-decoration: none;
   top: 0;
@@ -3866,3 +3871,4 @@ body.vjs-full-window {
 .mal {
   margin-left: 20px;
 }
+

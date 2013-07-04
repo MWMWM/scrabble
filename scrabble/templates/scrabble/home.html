@@ -2,29 +2,22 @@
 
 {% block content %}
 
-<div class ="row">
-  <div class="span1">
-  </div>
-  <div class="span3"> użytkownik
-  </div>
-  <div class="span2"> najlepszy wynik
-  </div>
-</div>
-<br/>
-<div class="row">
-    <div class="span1">
-  </div>
-  <div class="span3">
-    {% for user in users %} 
-      {{user.username}}<br/>
-    {% endfor %}
-  </div>
-  <div class="span2"> 
-    {% for user in users %} 
-      {{user.userprofile.best_score}}<br/>
-    {% endfor %}
-  </div>
-   </div>
+
+    <table>
+        <tr>
+            <th> lp. </th>
+            <th> użytkownik </th>
+            <th> najlepszy wynik</th>
+        </tr>
+        {% for user in users %} 
+        <tr>
+            <td class="span1">{{forloop.counter}}</td>
+            <td class="span2">{{user.username}}</td>
+            <td>{{user.userprofile.best_score}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
 
 {% endblock %}
 
