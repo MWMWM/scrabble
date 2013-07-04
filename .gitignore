@@ -5,10 +5,3 @@
 *.txt
 make_initial.py
 conf.py
-.gaedata/
-autoload/
-dbindexer/
-django/
-djangoappengine/
-djangotoolbox/
-*.yaml

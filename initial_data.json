@@ -6,7 +6,7 @@
         "username": "Inicjator", 
         "is_superuser": true, 
         "is_staff": true, 
-        "password": "pbkdf2_sha256$10000$TlThPe5XHmzx$lgH1PTzdtjt3bs694KhpNvjoPKIhPwYp8P9TGBElZTE=", 
+        "password": "w", 
         "email": ""
     }
 },
@@ -17,8 +17,22 @@
         "username": "M", 
         "is_superuser": true, 
         "is_staff": true, 
-        "password": "pbkdf2_sha256$10000$8PnA7YsNkrpq$Mu4z5zMGKOTYCV2TWb0GMNmm0FKyRtdPEX43Bd60ctk=", 
+        "password": "w", 
         "email": ""
+    }
+},
+{
+    "pk": 1, 
+    "model": "scrabble.userprofile", 
+    "fields": {
+        "user": 1
+    }
+},
+{
+    "pk": 2, 
+    "model": "scrabble.userprofile", 
+    "fields": {
+        "user": 2
     }
 },
 {
@@ -47,7 +61,62 @@
         "word": "why", 
         "added_by": [1], 
         "language": 2, 
-        "points": 3
+        "points": 6
+    }
+},
+{
+    "pk": 2, 
+    "model": "scrabble.word", 
+    "fields": {
+        "code": "kośt", 
+        "word": "ktoś", 
+        "added_by": [1], 
+        "language": 1, 
+        "points": 10
+    }
+},
+{
+    "pk": 3, 
+    "model": "scrabble.word", 
+    "fields": {
+        "code": "eehrw", 
+        "word": "where", 
+        "added_by": [1], 
+        "language": 2, 
+        "points": 7
+    }
+},
+{
+    "pk": 4, 
+    "model": "scrabble.word", 
+    "fields": {
+        "code": "eehr", 
+        "word": "here", 
+        "added_by": [2], 
+        "language": 2, 
+        "points": 6
+    }
+},
+{
+    "pk": 5, 
+    "model": "scrabble.word", 
+    "fields": {
+        "code": "ty", 
+        "word": "ty", 
+        "added_by": [2], 
+        "language": 1, 
+        "points": 4
+    }
+},
+{
+    "pk": 6, 
+    "model": "scrabble.word", 
+    "fields": {
+        "code": "aj", 
+        "word": "ja", 
+        "added_by": [1], 
+        "language": 1, 
+        "points": 4
     }
 }
 ]

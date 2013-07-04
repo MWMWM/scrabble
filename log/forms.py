@@ -6,13 +6,14 @@ from django import forms
 from django.contrib.auth import authenticate
 from scrabble.models import User, UserProfile
 from helper.views import Word
-
+from captcha.fields import CaptchaField
 
 class RegistrationForm(forms.Form):
     name = forms.CharField(max_length=30, label="login")
     password = forms.CharField(max_length=32, label="hasło",
             error_messages={'required': 'Musisz podać hasło'},
             widget=forms.PasswordInput)
+    captcha = CaptchaField(error_messages={'invalid': 'Nieprawidłowa captch'})
 
     def clean_name(self):
         name = self.cleaned_data['name']

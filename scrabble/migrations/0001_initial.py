@@ -12,7 +12,7 @@ class Migration(SchemaMigration):
         db.create_table(u'scrabble_language', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('short', self.gf('django.db.models.fields.CharField')(unique=True, max_length=2)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=20)),
+            ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=20)),
             ('letters', self.gf('django.db.models.fields.CharField')(max_length=50)),
         ))
         db.send_create_signal(u'scrabble', ['Language'])
@@ -101,7 +101,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Language'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'letters': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
+            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '20'}),
             'short': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '2'})
         },
         u'scrabble.userprofile': {

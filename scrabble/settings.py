@@ -139,6 +139,7 @@ INSTALLED_APPS = (
     'helper',
     'play',
     'south',
+    'captcha',
 )
 
 AUTH_PROFILE_MODULE = 'play.UserProfile'
