@@ -11,7 +11,7 @@ from django.shortcuts import render_to_response
 from scrabble.models import User, UserProfile, Word
 from log.forms import LogForm, RegistrationForm, AccountForm
 
-def Login(request, where):
+def Login(request, where=''):
     if request.POST:
         form = LogForm(request.POST)
         if form.is_valid():
@@ -20,6 +20,8 @@ def Login(request, where):
             person = authenticate(username=name, password=password)
             if person is not None:
                 login(request, person)
+                if not where:
+                    where = request.REQUEST.get('next', '')
                 return HttpResponseRedirect(where)
     else:
         form = LogForm()

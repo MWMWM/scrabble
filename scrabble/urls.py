@@ -6,11 +6,13 @@ admin.autodiscover()
 urlpatterns = patterns('',
         url(r'^admin/', include(admin.site.urls)),
         url(r'^captcha/', include('captcha.urls')),
+        url(r'^accounts/login/', 'log.views.Login'),
         )
 
 urlpatterns += patterns('scrabble.views',
         url(r'^$', 'Home', name='home'),
-        url(r'^Lang/(?P<lang>\w+)$', 'ChangeLang', name='change_lang'),
+        url(r'^Lang/(?P<lang>\w+)/(?P<where>.+)$', 'ChangeLang',
+            name='change_lang'),
         )
 
 urlpatterns += patterns('log.views',
@@ -33,7 +35,7 @@ urlpatterns += patterns('helper.views',
 
 urlpatterns += patterns('play.views',
         url(r'^start_play/$', 'StartPlay', name='start_play'),
-        url(r'^play/$', 'Play', name='play'),
+        url(r'^play_/$', 'Play', name='play'),
         url(r'^check/$', 'Check', name='check'),
         url(r'letter_plus/(?P<letter>\w)$', 'AddLetter', name='letter_plus'),
         url(r'letter_minus/(?P<letter>\w)$', 'DeleteLetter', name='letter_minus'),

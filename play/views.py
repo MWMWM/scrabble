@@ -26,8 +26,10 @@ def Play(request):
     player = UserProfile.objects.get(user=request.user)
     language = request.session.get('language', 'pl')
     language = Language.objects.get(short=language)
+    if not set(player.last_all_letters).issubset(language.letters):
+        player.prepare_for_play(language)
     left_letters = list((Counter(player.last_all_letters) - Counter(
-        player.last_temp_letters)).elements())    
+        player.last_temp_letters)).elements()) 
     return render_to_response('play/main.html', {'left_letters': left_letters,
         'player': player}, context_instance=RequestContext(request))
 
@@ -116,6 +118,7 @@ def Delete(request, where, temp_letters, letter=''):
 
 
 def Guess(request, result=0, guesses=0, all_letters='', temp_letters=''):
+    print all_letters, temp_letters
     left_letters = list((Counter(all_letters) - Counter(temp_letters)).elements())
     if not left_letters:
         language = request.session.get('language', 'pl')

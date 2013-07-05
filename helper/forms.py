@@ -16,7 +16,7 @@ class AddForm(forms.Form):
     def clean_words(self):
         words = self.cleaned_data['words']
         if re.search('[."\'-<>\d?!;:()/]', words):
-            return ValidationError("Wpisano niedozwolone znaki")
+            return forms.ValidationError("Wpisano niedozwolone znaki")
         return words
 
 

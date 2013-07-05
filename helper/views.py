@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError
 import magic
@@ -19,6 +20,7 @@ from scrabble.models import Word, User, Language, SetPoints
 from helper.forms import AddForm, FindForm, LangForm
 
 
+@login_required
 def AddPage(request):
     if request.POST:
         form = AddForm(request.POST, request.FILES)
@@ -63,6 +65,8 @@ def FindPage(request, word=''):
     return render_to_response('helper/find.html', {'form': form, 'word': word, 
         'words': existing_words}, context_instance=RequestContext(request))
 
+
+@login_required
 def AddLanguage(request, where=''):
     if request.POST:
         form = LangForm(request.POST)
@@ -79,14 +83,12 @@ def AddLanguage(request, where=''):
             context_instance=RequestContext(request))
 
 
+@login_required
 def AddWord(request, word, where):
-    if request.user.username:
-        language = request.session.get('language', 'pl')
-        language = Language.objects.get(short=language)
-        if AddOne(word, language, request.user):
-            messages.info(request, u'Dodano wyraz <{}>'.format(word))
-    else:
-        messages.error(request, 'By dodać jakieś słowo musisz być zalogowany')
+    language = request.session.get('language', 'pl')
+    language = Language.objects.get(short=language)
+    if AddOne(word, language, request.user):
+        messages.info(request, u'Dodano wyraz <{}>'.format(word))
     return HttpResponseRedirect(where)
 
 

@@ -19,9 +19,12 @@
         $('#lang_{{language.short}}').bind('click', function(){
           $.ajax({
             type: "GET",
-            url: "{% url 'change_lang' language.short %}",
-            success: function(){
-              window.location.reload();}})
+            url: "{% url 'change_lang' language.short request.path %}",
+            success: function(is_guess){
+            if (is_guess === true){
+            window.location.replace({% url 'guess' %});}
+            else{
+              window.location.reload()}}})
           return false})
         {% endfor %}})
   </script>

@@ -5,20 +5,31 @@
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.contrib import messages
-from django.http import HttpResponse
-from scrabble.models import Word, Language, User
+from django.http import HttpResponse, HttpResponseRedirect
+from django.core.urlresolvers import reverse
+from django.utils import simplejson
+from scrabble.models import Word, Language, User, UserProfile
 
 
 def MyContextProcessor(request):
     lang = request.session.get('language', 'pl')
     return {'user':request.user,
-            'lang': lang,
+            'lang': Language.objects.get(short=lang),
             'languages': Language.objects.exclude(short=lang)}
 
 
-def ChangeLang(request, lang):
+def ChangeLang(request, lang, where):
     request.session['language'] = lang
-    return HttpResponse()
+    if 'play_' in where:
+        player = UserProfile.objects.get(user=request.user)
+        language = Language.objects.get(short=lang)
+        player.prepare_for_play(language)
+    if 'guess' in where:
+        is_guess = True
+    else:
+        is_guess = False
+    json = simplejson.dumps(is_guess)
+    return HttpResponse(json, mimetype='application/json')
 
 
 def Home(request):
