@@ -21,6 +21,7 @@ urlpatterns += patterns('log.views',
         url(r'^Register(?P<where>.+)', 'Register', name='register'),
         url(r'^AccountSettings$', 'AccountSettings', name='account_settings'),
         url(r'DeleteAccount$', 'DeleteAccount', name='delete_account'),
+        url(r'CheckAvailability/$', 'CheckAvailability', name='check_availability'),
         )
 
 urlpatterns += patterns('helper.views',

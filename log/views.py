@@ -1,13 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
+from django.utils import simplejson
 from scrabble.models import User, UserProfile, Word
 from log.forms import LogForm, RegistrationForm, AccountForm
 
@@ -70,5 +71,15 @@ def DeleteAccount(request):
     who.delete()
     return HttpResponseRedirect(reverse('home'))
 
-
-
+def CheckAvailability(request):
+    name = request.POST.get('name', None)
+    is_availeable = False
+    error = False
+    if name:
+        if not User.objects.filter(username=name).exists():
+            is_availeable = True
+    else:
+        error = True
+    return HttpResponse(simplejson.dumps({
+            'is_availeable': is_availeable, 'error': error}),
+        mimetype='application/jvascript')

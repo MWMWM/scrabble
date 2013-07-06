@@ -1,5 +1,24 @@
 {% extends "with_form.html" %}
-
+{% block for_js %}
+  <script type="text/javascript">
+    $(document).ready(function(){
+        $('#id_name').bind('change', function(){
+          $.ajax({
+            type: "POST",
+            url: "{% url 'check_availability' %}",
+            data: {'name': $('#id_name').val(),'csrfmiddlewaretoken': '{{csrf_token}}'},
+            success: function(response){
+            var response = $.parseJSON(response)
+            if (response.error === false){
+              if (response.is_availeable === true){
+              $('#id_name').parent().attr('class', 'control-group')
+              $('#id_name').siblings('.errorlist').empty()}
+              else{
+              $('#id_name').parent().attr('class', 'control-group error')
+              $('#id_name').parent().append('<ul class="errorlist"><li>Taki login już istnieje</li></ul>')}}}})
+          return false})})
+  </script>
+{% endblock %}
 {% block submit_button %}
     <input class="btn" type="submit" name = "addlog" value = "Utwórz konto i zaloguj"/>
 {% endblock %}
