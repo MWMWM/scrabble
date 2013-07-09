@@ -8,6 +8,7 @@ from scrabble.models import User, UserProfile
 from helper.views import Word
 from captcha.fields import CaptchaField
 
+
 class RegistrationForm(forms.Form):
     name = forms.CharField(max_length=30, label="login")
     password = forms.CharField(max_length=32, label="hasło",

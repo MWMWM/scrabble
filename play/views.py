@@ -30,7 +30,7 @@ def Play(request):
     if not set(player.last_all_letters).issubset(language.letters):
         player.prepare_for_play(language)
     left_letters = list((Counter(player.last_all_letters) - Counter(
-        player.last_temp_letters)).elements()) 
+        player.last_temp_letters)).elements())
     return render_to_response('play/main.html', {'left_letters': left_letters,
         'player': player}, context_instance=RequestContext(request))
 
@@ -61,16 +61,16 @@ def Check(request):
         player.save()
     except (DatabaseError, ObjectDoesNotExist):
         return render_to_response('play/main.html', {'not_existing': True,
-           'left_letters': left_letters, 'player': player}, 
+           'left_letters': left_letters, 'player': player},
            context_instance=RequestContext(request))
     return  HttpResponseRedirect(reverse('play'))
 
 
-def TellTheBest(letters, language): 
+def TellTheBest(letters, language):
     for_regex = '^' + r'?'.join(Code(letters)) + '?$'
     try:
-        word = Word.objects.filter(code__regex=for_regex, language=language).order_by(
-                '-points')[0]
+        word = Word.objects.filter(code__regex=for_regex,
+                language=language).order_by('-points')[0]
     except IndexError:
         return u'Nie można ułożyć żadnego słowa'
     return u'Najlepsze słowo, jakie można było ułożyć, to {} za {}'.format(
@@ -103,7 +103,6 @@ def ChangeLetters(request):
                     odjęto Ci 5 punktów'.format(words[0]))
         else:
             player.last_score -= 10
-            print len(words)
             messages.info(request, u'Można było ułożyć takie słowa, jak: <{}> \
                     i dlatego odjęto Ci 10 punktów'.format(
                             '>, <'.join(w.word for w in words)))
@@ -112,9 +111,11 @@ def ChangeLetters(request):
     player.save()
     return  HttpResponseRedirect(reverse('play'))
 
+
 def Delete(request, where, temp_letters, letter=''):
     temp_letters = temp_letters.replace(letter, '', 1)
     return HttpResponseRedirect('/' + where + '/' + temp_letters)
+
 
 def Guess(request):
     language = request.session.get('language', 'pl')
@@ -124,18 +125,17 @@ def Guess(request):
     return render_to_response('play/guess.html', {'letters': letters,
         'result': 0, 'guesses': 0}, context_instance=RequestContext(request))
 
+
 def CheckGuess(request):
     regex = request.GET.get('regex', None)
     letters = request.session.get('last_letters', None)
     regex = re.split('&letter\[\]=', regex)
     regex[0] = regex[0].replace('letter[]=', '')
     word = ''
-    print regex
     for nb, letter in enumerate(letters):
         word += letters[int(regex[nb]) - 1]
     language = request.session.get('language', 'pl')
     language = Language.objects.get(short=language)
-    print word
     if Word.objects.filter(word=word, language=language).exists():
         was_correct = True
         possible_words = ''
@@ -144,11 +144,9 @@ def CheckGuess(request):
         possible_words = ''
         for word in words:
             possible_words += word.word + ' '
-        print possible_words
         was_correct = False
     letters = Word.objects.filter(language=language).order_by('?')[0].word
     request.session['last_letters'] = letters
-    print letters
-    return HttpResponse(simplejson.dumps({'letters': letters, 
+    return HttpResponse(simplejson.dumps({'letters': letters,
         'was_correct': was_correct, 'possible_words': possible_words}),
         mimetype='application/jvascript')

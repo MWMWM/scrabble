@@ -12,6 +12,7 @@ from django.utils import simplejson
 from scrabble.models import User, UserProfile, Word
 from log.forms import LogForm, RegistrationForm, AccountForm
 
+
 def Login(request, where=''):
     if request.POST:
         form = LogForm(request.POST)
@@ -28,6 +29,7 @@ def Login(request, where=''):
         form = LogForm()
     return render_to_response('log/login.html', {'form': form},
             context_instance=RequestContext(request))
+
 
 def Register(request, where):
     if request.POST:
@@ -46,9 +48,11 @@ def Register(request, where):
     return render_to_response('log/register.html', {'form': form},
             context_instance=RequestContext(request))
 
+
 def Logout(request):
     logout(request)
     return HttpResponseRedirect(reverse('home'))
+
 
 def AccountSettings(request):
     if request.POST:
@@ -63,6 +67,7 @@ def AccountSettings(request):
     return render_to_response('log/account_settings.html', {'form': form},
             context_instance=RequestContext(request))
 
+
 def DeleteAccount(request):
     who = request.user
     Word.objects.filter(added_by=who).delete()
@@ -70,6 +75,7 @@ def DeleteAccount(request):
     UserProfile.objects.get(user=who).delete()
     who.delete()
     return HttpResponseRedirect(reverse('home'))
+
 
 def CheckAvailability(request):
     name = request.POST.get('name', None)
