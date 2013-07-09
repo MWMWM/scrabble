@@ -1,0 +1,12 @@
+.errorlist li{
+    list-style-type:none;
+    background-color: #e74c3c;
+    width: 30%;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.letters li{
+  display: inline;
+  font-size: 250%;
+}

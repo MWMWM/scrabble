@@ -1,38 +1,50 @@
 {% extends "base.html" %}
+{% block for_js %}
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script type="text/javascript">
+  $(function() {
+    $( "#letters" ).sortable({
+        connectWith: ".letters"}).disableSelection()})
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("a.check").click(function(){
+          $.ajax({
+            type: "GET",
+            url: "{% url 'check_guess' %}",
+            data: {'regex': $("#letters").sortable("serialize")},
+            success: function(response){
+              var response = $.parseJSON(response)
+              if (response.was_correct === true){
+                $('#informations').html("Ułożony wyraz był poprawny")
+                $('#result').html(parseInt($('#result').text()) + 1)}
+              else{
+                $('#informations').html("Ułożony wyraz nie był poprawny. Można było ułożyć " + response.possible_words)}
+              $('#guesses').html(parseInt($('#guesses').text()) + 1)
+              $('#letters').empty()
+              for (i=0;i<response.letters.length; i++){
+                $(".letters").append("<li id=\"letter_" + (i + 1) + "\">" + response.letters[i] + "</li>")}
+}})
+          return false})})
+  </script>
+  
+{% endblock %}
 {% block content %}
 <div class="row">
-  <div class="span2">
-      Aktualny wyraz:
-  </div>
-  <div class="span5">
-    {% for letter in temp_letters %}
-      <a href="{{request.path}}/{{letter}}">
-        <img src="{{STATIC_URL}}letters/{{letter}}.jpg" alt="{{letter}}">
-      </a>
-    {% endfor %}
-  </div>
+    <ul id="letters" class="letters">
+        {% for letter in letters %}
+        <li id="letter_{{forloop.counter}}">{{letter}}</li>
+        {% endfor %}
+    </ul>
 </div>
-<br/>
-<div class="row">
-  <div class="span2">
-    Pozostałe literki:
-  </div>
-  <div class="span5">
-    {% for letter in left_letters %}
-      <a href="{{request.path}}{{letter}}">
-        <img src="{{STATIC_URL}}letters/{{letter}}.jpg" alt="{{letter}}">
-      </a>
-      {% endfor %}
-  </div>
-</div>
-<br/>
 <div class="row">
   <div class="span2">
     Aktualny wynik:
   </div>
   <div class="span4">
-    {{result}}/{{guesses}}
+      <span id="result">{{result}}</span>/<span id="guesses">{{guesses}}</span>
   </div>
 </div>
 <br/>
+<a class="check" href="#">sprawdż słowo </a>
 {% endblock %}

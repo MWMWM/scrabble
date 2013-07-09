@@ -11,7 +11,6 @@ from captcha.fields import CaptchaField
 class RegistrationForm(forms.Form):
     name = forms.CharField(max_length=30, label="login")
     password = forms.CharField(max_length=32, label="hasło",
-            error_messages={'required': 'Musisz podać hasło'},
             widget=forms.PasswordInput)
     captcha = CaptchaField(error_messages={'invalid': 'Nieprawidłowa captch'})
 
@@ -25,7 +24,6 @@ class RegistrationForm(forms.Form):
 class LogForm(forms.Form):
     name = forms.CharField(max_length=30, label="login")
     password = forms.CharField(max_length=32, label="hasło",
-            error_messages={'required': 'Musisz podać hasło'},
             widget=forms.PasswordInput)
 
     def clean_name(self):

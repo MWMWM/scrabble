@@ -42,12 +42,7 @@ urlpatterns += patterns('play.views',
         url(r'letter_minus/(?P<letter>\w)$', 'DeleteLetter', name='letter_minus'),
         url(r'^changeletters/$', 'ChangeLetters', name='changeletters'),
         url(r'^guess/$', 'Guess', name='guess'),
-        url(r'^guess/(?P<result>\d+)/(?P<guesses>\d+)/(?P<all_letters>\w+)/$',
-            'Guess', name='guessed'),
-        url(r'^guess/(?P<result>\d+)/(?P<guesses>\d+)/(?P<all_letters>\w+)/(?P<temp_letters>\w+)$',
-            'Guess', name='check_guess'),
-        url(r'^(?P<where>.+)/(?P<temp_letters>\w+)/(?P<letter>\w)$',
-            'Delete', name='delete_letter'),
+        url(r'^check_guess/$', 'CheckGuess', name='check_guess'),
         )
 
 urlpatterns += staticfiles_urlpatterns()

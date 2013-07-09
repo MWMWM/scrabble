@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-
+import re
 import random
 from collections import Counter
 from django.http import HttpResponse, HttpResponseRedirect
@@ -12,6 +12,7 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError
+from django.utils import simplejson
 from scrabble.models import Word, UserProfile, Language, UserProfile, NewLetters
 from helper.views import Code, AddWord, CheckSubwords
 
@@ -111,31 +112,43 @@ def ChangeLetters(request):
     player.save()
     return  HttpResponseRedirect(reverse('play'))
 
-
 def Delete(request, where, temp_letters, letter=''):
     temp_letters = temp_letters.replace(letter, '', 1)
     return HttpResponseRedirect('/' + where + '/' + temp_letters)
 
+def Guess(request):
+    language = request.session.get('language', 'pl')
+    language = Language.objects.get(short=language)
+    letters = Word.objects.filter(language=language).order_by('?')[0].word
+    request.session['last_letters'] = letters
+    return render_to_response('play/guess.html', {'letters': letters,
+        'result': 0, 'guesses': 0}, context_instance=RequestContext(request))
 
-def Guess(request, result=0, guesses=0, all_letters='', temp_letters=''):
-    print all_letters, temp_letters
-    left_letters = list((Counter(all_letters) - Counter(temp_letters)).elements())
-    if not left_letters:
-        language = request.session.get('language', 'pl')
-        language = Language.objects.get(short=language)
-        if all_letters:
-            guesses = int(guesses) + 1
-            if Word.objects.filter(word=temp_letters, language=language).exists():
-                result = int(result) + 1
-                messages.info(request, "Utworzony wyraz był poprawny")
-            else:
-                word = Word.objects.filter(code=Code(all_letters), language=language)
-                messages.info(request, u"Utworzony wyraz nie był poprawny, \
-                        można było utworzyć <{}>".format('>, <'.join(
-                            w.word for w in word)))
-        all_letters = Word.objects.filter(language=language).order_by('?')[0]
-        return HttpResponseRedirect(reverse('guessed', kwargs={
-            'result': result, 'guesses': guesses, 'all_letters': all_letters}))
-    return render_to_response('play/guess.html', {'result': result,
-        'guesses': guesses, 'temp_letters': temp_letters,
-        'left_letters': left_letters}, context_instance=RequestContext(request))
+def CheckGuess(request):
+    regex = request.GET.get('regex', None)
+    letters = request.session.get('last_letters', None)
+    regex = re.split('&letter\[\]=', regex)
+    regex[0] = regex[0].replace('letter[]=', '')
+    word = ''
+    print regex
+    for nb, letter in enumerate(letters):
+        word += letters[int(regex[nb]) - 1]
+    language = request.session.get('language', 'pl')
+    language = Language.objects.get(short=language)
+    print word
+    if Word.objects.filter(word=word, language=language).exists():
+        was_correct = True
+        possible_words = ''
+    else:
+        words = Word.objects.filter(code=Code(word), language=language)
+        possible_words = ''
+        for word in words:
+            possible_words += word.word + ' '
+        print possible_words
+        was_correct = False
+    letters = Word.objects.filter(language=language).order_by('?')[0].word
+    request.session['last_letters'] = letters
+    print letters
+    return HttpResponse(simplejson.dumps({'letters': letters, 
+        'was_correct': was_correct, 'possible_words': possible_words}),
+        mimetype='application/jvascript')

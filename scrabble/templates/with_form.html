@@ -1,5 +1,14 @@
 {% extends "base.html" %}
-
+{% block for_js %}
+  <script type="text/javascript">
+      $(document).ready(function(){
+        {% for field in form %}
+        $('#id_{{field.name}}').focusout(function(){
+            $('#id_{{field.name}}').parent().attr('class', 'control-group')
+            $('#id_{{field.name}}').siblings('.errorlist').remove()})
+        {% endfor %} })
+  </script>
+{% endblock %}
 {% block content %}
 
     <form enctype="multipart/form-data" action="" method="POST">{% csrf_token %}
